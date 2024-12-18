@@ -1,0 +1,162 @@
+module at-licensing {
+  namespace "http://alliedtelesis.com/ns/yang/at-licensing";
+  prefix at-lic;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for
+    Allied Telesis Licensing";
+
+  revision 2023-05-17 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container licensing {
+    list entitled-features {
+      key "license-id";
+      description
+        "List of features that have active entitlements installed. In stacked environments, this information may have been learned from another device in the stack.";
+      config false;
+      leaf license-id {
+        description
+          "Internal identifier for this feature.";
+        config false;
+        type string;
+      }
+      leaf name {
+        description
+          "A human-readable name for this feature";
+        config false;
+        type string;
+      }
+      leaf count-description {
+        description
+          "A human-readable description of what the count represents. This is only present for features that are licensed for a particular quantity (i.e. counted features).";
+        config false;
+        type string;
+      }
+      leaf count {
+        description
+          "The currently available count. \"0\" means unlicensed. For uncounted features, \"1\" means licensed. For counted features, positive values have a meaning specific to that feature (reference count-description).";
+        config false;
+        type string;
+      }
+      list entitlements {
+        key "time";
+        description
+          "A list of time-count pairs to represent how the entitlements change over time. Each time-count pair represents a point in time that the count will change. The count will be in force from the stated time until one second before the next time-count pair (or forever if there are no more). The count is zero before the earliest specified time.";
+        leaf time {
+          description
+            "The time that the change takes effect (UTC). The format is \"YYYY-MM-DD\". Changes always take effect at midnight, UTC (00:00:00). \"-\" is a special value to represent the count having no start date i.e. it has always been in effect.";
+          config false;
+          type string;
+        }
+        leaf count {
+          description
+            "The count";
+          config false;
+          default "0";
+          type int32;
+        }
+      }
+      container source {
+        description
+          "Information about which device the active entitlements were sourced from.";
+        leaf node-id {
+          description
+            "The stack node-id of the source device.";
+          config false;
+          type string;
+        }
+        leaf serial {
+          description
+            "The serial number of the source device.";
+          config false;
+          type string;
+        }
+        leaf mac-address {
+          description
+            "The MAC address of the source device.";
+          config false;
+          type string;
+        }
+      }
+    }
+    list entitled-features-stored {
+      key "license-id";
+      description
+        "Feature entitlements that the local device has learned from its license sources. Entitlements in this tree are used as an information source to distribute the entitlement information around the stack (or in a non-stacked device, copied directly to entitled-features path)";
+      config false;
+      leaf license-id {
+        description
+          "Internal identifier for this feature.";
+        config false;
+        type string;
+      }
+      leaf name {
+        description
+          "A human-readable name for this feature";
+        config false;
+        type string;
+      }
+      leaf count-description {
+        description
+          "A human-readable description of what the count represents. This is only present for features that are licensed for a particular quantity (i.e. counted features).";
+        config false;
+        type string;
+      }
+      list entitlements {
+        key "time";
+        description
+          "A list of time-count pairs to represent how the entitlements change over time. Each time-count pair represents a point in time that the count would change. The count would be in force from the stated time until one second before the next time-count pair (or forever if there are no more). The count is zero before the earliest specified time.";
+        leaf time {
+          description
+            "The time that the change takes effect (UTC). The format is \"YYYY-MM-DD\". Changes always take effect at midnight, UTC (00:00:00). \"-\" is a special value to represent the count having no start date i.e. it has always been in effect.";
+          config false;
+          type string;
+        }
+        leaf count {
+          description
+            "The count";
+          config false;
+          default "0";
+          type int32;
+        }
+      }
+    }
+    leaf stored-features-initialized {
+      description
+        "Set to \"1\" once this stack node has initialized \"entitled-features-stored\" at start up.";
+      config false;
+      type string;
+    }
+    container temporary-license-transfer {
+      description
+        "Replacement device temporary license information. These fields are only set if the device has recently undergone AMF recovery.";
+      leaf origin-device-serial {
+        description
+          "This is set to the temporary serial number currently being used. If this is not set then the device's real serial number is being used.";
+        config false;
+        type string;
+      }
+      leaf expiry-time {
+        description
+          "The time when the temporary serial number will no longer work. The time is returned in ISO format. For example 2015-02-04T17:00:00Z. This will only be set if the origin-device-serial field is set.";
+        config false;
+        type string;
+      }
+    }
+  }
+}
+

@@ -1,0 +1,260 @@
+module at-lldp-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-lldp-topology";
+  prefix at-lldpt;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  import ieee802-dot1ab-types {
+    prefix lldp-types;
+  }
+
+  import ieee802-types {
+    prefix ieee;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to LLDP topology.";
+
+  revision "2023-07-25" {
+    description "Moved management-address to termination-point";
+  }
+
+  revision "2023-06-15" {
+    description "Relaxed type of management-address.address";
+  }
+
+  revision "2023-02-09" {
+    description "Initial revision";
+  }
+
+  grouping lldp-network-type {
+    description
+      "Indicates the topology type to be LLDP.";
+    container lldp-topology {
+      presence "Indicates LLDP Network Topology.";
+      description
+        "The presence of the container node indicates LLDP Network Topology.";
+    }
+  }
+
+  grouping lldp-node-attributes {
+    container lldp-node-attributes {
+      leaf chassis-id-subtype {
+        type ieee:chassis-id-subtype-type;
+        description
+          "Identify the chassis associated with the remote system.";
+        reference
+          "8.5.2.2 of IEEE Std 802.1AB-2016";
+      }
+      leaf chassis-id {
+        type ieee:chassis-id-type;
+        description
+          "Identify the chassis component associated with the remote
+          system.";
+        reference
+          "8.5.2.3 of IEEE Std 802.1AB-2016";
+      }
+      leaf system-name {
+        type string {
+          length "0..255";
+        }
+        description
+          "System name of the remote system.";
+        reference
+          "8.5.6.2 of IEEE Std 802.1AB-2016";
+      }
+      leaf system-description {
+        type string {
+          length "0..255";
+        }
+        description
+          "System description of the remote system.";
+        reference
+          "8.5.7.2 of IEEE Std 802.1AB-2016";
+      }
+      leaf system-capabilities-supported {
+        type lldp-types:system-capabilities-map;
+        description
+          "Capabilities that are supported on the remote system.";
+        reference
+          "8.5.8.1 of IEEE Std 802.1AB-2016";
+      }
+      leaf system-capabilities-enabled {
+        type lldp-types:system-capabilities-map;
+        description
+          "System capabilities that are enabled on the remote system.";
+        reference
+          "8.5.8.2 of IEEE Std 802.1AB-2016";
+      }
+      leaf med-device-type {
+        type uint8;
+        description
+          "LLDP-MED Device Type";
+        reference
+          "10.2.2.2 of ANSI/TIA-1057";
+      }
+      leaf med-hardware-revision {
+        type string {
+          length "0..32";
+        }
+        description
+          "LLDP-MED Hardware Revision";
+        reference
+          "10.2.6.1 of ANSI/TIA-1057";
+      }
+      leaf med-firmware-revision {
+        type string {
+          length "0..32";
+        }
+        description
+          "LLDP-MED Firmware Revision";
+        reference
+          "10.2.6.2 of ANSI/TIA-1057";
+      }
+      leaf med-software-revision {
+        type string {
+          length "0..32";
+        }
+        description
+          "LLDP-MED Software Revision";
+        reference
+          "10.2.6.3 of ANSI/TIA-1057";
+      }
+      leaf med-serial-number {
+        type string {
+          length "0..32";
+        }
+        description
+          "LLDP-MED Serial Number";
+        reference
+          "10.2.6.4 of ANSI/TIA-1057";
+      }
+      leaf med-manufacturer-name {
+        type string {
+          length "0..32";
+        }
+        description
+          "LLDP-MED Manufacturer Name";
+        reference
+          "10.2.6.5 of ANSI/TIA-1057";
+      }
+      leaf med-model-name {
+        type string {
+          length "0..32";
+        }
+        description
+          "LLDP-MED Model Name";
+        reference
+          "10.2.6.6 of ANSI/TIA-1057";
+      }
+      leaf med-asset-id {
+        type string {
+          length "0..32";
+        }
+        description
+          "LLDP-MED Asset ID";
+        reference
+          "10.2.6.7 of ANSI/TIA-1057";
+      }
+    }
+  }
+
+  grouping lldp-termination-point-attributes {
+    container lldp-termination-point-attributes {
+      leaf port-id-subtype {
+        type ieee:port-id-subtype-type;
+        description
+          "The type of port identifier encoding used in the associated
+          'port-id' object.";
+        reference
+          "8.5.3.2 of IEEE Std 802.1AB-2016";
+      }
+      leaf port-id {
+        type ieee:port-id-type;
+        description
+          "Port component associated with the remote system.";
+        reference
+          "8.5.3.3 of IEEE Std 802.1AB-2016";
+      }
+      leaf port-description {
+        type string {
+          length "0..255";
+        }
+        description
+          "Description of the given port associated with the remote system.";
+        reference
+          "8.5.5.2 of IEEE Std 802.1AB-2016";
+      }
+      list management-address {
+        key "address-subtype address";
+        description
+          "Management address information about a particular chassis
+          component.";
+        leaf address-subtype {
+          type uint8;
+          description
+            "Management address identifier encoding.";
+          reference
+            "8.5.9.3 of IEEE Std 802.1AB-2016";
+        }
+        leaf address {
+          type string;
+          description
+            "Management address component associated with the remote
+            system.";
+          reference
+            "8.5.9.4 of IEEE Std 802.1AB-2016";
+        }
+        leaf if-subtype {
+          type lldp-types:man-addr-if-subtype;
+          description
+            "Interface numbering method used for defining the interface
+            number, associated with the remote system.";
+          reference
+            "8.5.9.5 of IEEE Std 802.1AB-2016";
+        }
+        leaf if-id {
+          type uint32;
+          description
+            "Interface number regarding the management address component
+            associated with the remote system.";
+          reference
+            "8.5.9.6 of IEEE Std 802.1AB-2016";
+        }
+      }
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses lldp-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nw:node" {
+    when '/nw:networks/nw:network/nw:network-types/at-lldpt:lldp-topology' {
+      description
+        "Augmentation parameters apply only for networks with LLDP topology.";
+    }
+    uses lldp-node-attributes;
+  }
+
+  augment "/nw:networks/nw:network/nw:node/nt:termination-point" {
+    when '/nw:networks/nw:network/nw:network-types/at-lldpt:lldp-topology' {
+      description
+        "Augmentation parameters apply only for networks with LLDP topology.";
+    }
+    uses lldp-termination-point-attributes;
+  }
+}

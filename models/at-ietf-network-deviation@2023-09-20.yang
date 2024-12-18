@@ -1,0 +1,29 @@
+module at-ietf-network-deviation {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-ietf-network-deviation";
+  prefix at-nw;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the ietf-network module.";
+
+  revision 2023-09-20 {
+    description
+      "Initial revision.";
+  }
+
+  deviation /nw:networks {
+    deviate replace {
+      config false;
+    }
+  }
+}

@@ -1,0 +1,76 @@
+module at-dhcp-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-dhcp-topology";
+  prefix at-dhcpt;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to DHCP topology.";
+
+  revision "2023-05-19" {
+      description "Initial revision";
+  }
+
+  typedef dhcp-opt-code {
+    type uint8;
+    description
+      "DHCP Option Code";
+  }
+
+  typedef dhcp-opt-value {
+    type binary;
+    description
+      "DHCP Option Value";
+  }
+
+  grouping dhcp-termination-point-attributes {
+    container dhcp-termination-point-attributes {
+      list dhcp-request-options {
+        key "code";
+
+        leaf code {
+          type dhcp-opt-code;
+        }
+
+        leaf value {
+          type dhcp-opt-value;
+        }
+      }
+    }
+  }
+
+  grouping dhcp-network-type {
+    description
+      "Indicates the topology type to be DHCP.";
+    container dhcp-topology {
+      presence "Indicates DHCP Network Topology.";
+      description
+        "The presence of the container node indicates DHCP Network Topology.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses dhcp-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nw:node/nt:termination-point" {
+    when '/nw:networks/nw:network/nw:network-types/at-dhcpt:dhcp-topology' {
+      description
+        "Augmentation parameters apply only for networks with DHCP topology.";
+    }
+    uses dhcp-termination-point-attributes;
+  }
+}

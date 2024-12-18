@@ -1,0 +1,89 @@
+module at-l2-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-l2-topology";
+  prefix at-l2t;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  import ietf-l2-topology {
+    prefix l2t;
+  }
+
+  import ieee802-dot1q-types {
+    prefix dot1q-types;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to Layer 2 topology.";
+
+  revision "2023-02-09" {
+    description "Initial revision";
+  }
+
+  typedef switchport-mode {
+    type enumeration {
+      enum access {
+        description
+          "Access mode.";
+      }
+      enum trunk {
+        description
+          "Trunk mode.";
+      }
+    }
+    description
+      "Indicates the switchport mode.";
+  }
+
+  grouping at-l2-termination-point-attributes {
+    leaf access-vlan {
+      if-feature "l2t:VLAN";
+      type dot1q-types:vlanid;
+      description
+        "The VLAN ID for untagged frames, when the port is in access mode.";
+    }
+    leaf native-vlan {
+      if-feature "l2t:VLAN";
+      type dot1q-types:vlanid;
+      description
+        "The native VLAN ID for untagged frames, when the port is in trunk mode.";
+    }
+    leaf-list trunk-vlan {
+      if-feature "l2t:VLAN";
+      type dot1q-types:vlanid;
+      description
+        "The accepted VLAN IDs, when the port is in trunk mode.";
+    }
+    leaf switchport-mode {
+      if-feature "l2t:VLAN";
+      type switchport-mode;
+      description
+        "The mode of the switchport.";
+    }
+    leaf-list member-vlan-tp {
+      if-feature "l2t:VLAN";
+      type leafref {
+        path "/nw:networks/nw:network/nw:node"
+           + "/nt:termination-point/nt:tp-id";
+      }
+      description
+        "List of port termination points associated with this VLAN.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:node/nt:termination-point/l2t:l2-termination-point-attributes" {
+    uses at-l2-termination-point-attributes;
+  }
+}

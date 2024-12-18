@@ -1,0 +1,38 @@
+module at-ietf-interfaces-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-ietf-interfaces-deviation";
+  prefix at-if;
+
+  import ietf-interfaces {
+    prefix if;
+  }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the ietf-interfaces module.";
+
+  revision 2023-07-10 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  deviation "/if:interfaces" {
+    deviate not-supported;
+    description
+      "ietf-interfaces not supported in 5.5.3-1";
+  }
+
+  deviation "/if:interfaces-state" {
+    deviate not-supported;
+    description
+      "ietf-interfaces not supported in 5.5.3-1";
+  }
+}

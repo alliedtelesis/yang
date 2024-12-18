@@ -1,0 +1,538 @@
+module at-interface {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-interface";
+  prefix at-if;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+  contact
+    "Allied Telesis Customer Support Group";
+  description
+    "This document defines a YANG module for Alliedtelesis interfaces";
+
+  revision 2019-12-01 {
+    description
+      "Initial revision. This revision is for INTERNAL use only.";
+    reference "RFC 6020: A Data Modeling Language for the Network Configuration Protocol (NETCONF) RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  feature vrf {
+    description
+      "Enables vrf support.";
+  }
+
+  container interface {
+    description
+        "Interface parameters";
+    leaf-list if-alias {
+      type string;
+      config false;
+      description
+        "Interface index to name";
+    }
+    list interfaces {
+      key "name";
+      description
+        "Interface List";
+      leaf name {
+        type string;
+        description
+          "Interface name";
+      }
+      leaf if-index {
+        type string;
+        config false;
+        description
+          "Interface Index";
+      }
+      container status {
+        description
+          "Interface status";
+        config false;
+        leaf admin-status {
+          type enumeration {
+            enum "admin-down" {
+              value 0;
+              description
+                "admin-down";
+            }
+            enum "admin-up" {
+              value 1;
+              description
+                "admin-up";
+            }
+          }
+          config false;
+          description
+            "Admin Status";
+        }
+        leaf oper-status {
+          type string;
+          config false;
+          description
+            "Operation State, refer: kernel documentation";
+        }
+        leaf flags {
+          type string;
+          config false;
+          description
+            "Interface state flags, refer: kernel documentation";
+        }
+        leaf phys-address {
+          type string;
+          config false;
+          description
+            "Physical (MAC) Address";
+        }
+        leaf promisc {
+          type enumeration {
+            enum "promisc-off" {
+              value 0;
+              description
+                "promisc-off";
+            }
+            enum "promisc-on" {
+              value 1;
+              description
+                "promisc-on";
+            }
+          }
+          config false;
+          description
+            "Promiscuous mode";
+        }
+        leaf qdisc {
+          type string;
+          config false;
+          description
+            "Traffic Queuing Discipline";
+        }
+        leaf mtu {
+          type string;
+          config false;
+          description
+            "Maximum Transmission Unit (68-16535 octets)";
+        }
+        leaf speed {
+          type string;
+          config false;
+          description
+            "Current interface speed (Mb/s)";
+        }
+        leaf max-speed {
+          type string;
+          config false;
+          description
+            "Maximum possible interface speed (Mb/s)";
+        }
+        leaf master-ifindex {
+          type string;
+          config false;
+          description
+            " Parent bridge ifindex";
+        }
+        leaf duplex {
+          type enumeration {
+            enum "Auto" {
+              value 0;
+              description
+                "Auto Duplex";
+            }
+            enum "Full" {
+              value 1;
+              description
+                "Full Duplex";
+            }
+            enum "Half" {
+              value 2;
+              description
+                "Half Duplex";
+            }
+          }
+          config false;
+          description
+            "Current Duplex Mode";
+        }
+        leaf polarity {
+          type enumeration {
+            enum "Auto" {
+              value 0;
+              description
+                "Auto";
+            }
+            enum "MDI" {
+              value 1;
+              description
+                "MDI";
+            }
+            enum "MDI-X" {
+              value 2;
+              description
+                "MDI-X";
+            }
+          }
+          config false;
+          description
+            "Current MDI/-X Mode";
+        }
+        leaf mru {
+          type string;
+          config false;
+          description
+            "Maximum Receive Units (68-16535 octets)";
+        }
+        leaf arptype {
+          type string;
+          config false;
+          description
+            "ARP Hardware Type. 1 = ethernet";
+        }
+        leaf rxq {
+          type string;
+          config false;
+          description
+            "How many receive queues exist";
+        }
+        leaf txqlen {
+          type string;
+          config false;
+          description
+            "Maximum transmit queue length";
+        }
+        leaf txq {
+          type string;
+          config false;
+          description
+            "How many transmit queues exist";
+        }
+        container ipv4 {
+          description
+            "IPv4";
+          list addresses {
+            key "ip";
+            description
+              "IPv4 addresses";
+            leaf ip {
+              type string;
+              config false;
+              description
+                "IPv4 Address";
+            }
+            leaf mask {
+              type string;
+              config false;
+              description
+                "Subnet Mask  (0-32)";
+            }
+            leaf scope {
+              type enumeration {
+                enum "Universe" {
+                  value 0;
+                  description
+                    "Global address";
+                }
+                enum "Site" {
+                  value 200;
+                  description
+                    "Site-only access";
+                }
+                enum "Link" {
+                  value 253;
+                  description
+                    "On-Link-only access";
+                }
+                enum "Host" {
+                  value 254;
+                  description
+                    "Host-only access";
+                }
+                enum "Nowhere" {
+                  value 255;
+                  description
+                    "Non-existant destination";
+                }
+              }
+              config false;
+              description
+                "Address scope";
+            }
+            leaf flags {
+              type int32;
+              default "0";
+              config false;
+              description
+                "Address flags (kernel: IFA_ADDRESS)";
+            }
+            leaf secondary {
+              type enumeration {
+                enum "secondary" {
+                  value 1;
+                  description
+                    "This is a secondary IP Address";
+                }
+                enum "not" {
+                  value 0;
+                  description
+                    "This is NOT a secondary IP Address";
+                }
+              }
+              default "not";
+              config false;
+              description
+                "Secondary IP address";
+            }
+            leaf remote {
+              type string;
+              config false;
+              description
+                "If not set, this will be 0.0.0.0. Otherwise, if this is a point-to-point interface
+                 then this is the remote IPv4 Address, otherwise it is the broadcast IPv4 address";
+            }
+            leaf type {
+              type enumeration {
+                enum "standard" {
+                  description
+                    "This is a standard (broadcast) type IPv4 Address";
+                }
+                enum "point-to-point" {
+                  description
+                    "This is a point-to-point type IPv4 Address";
+                }
+              }
+              default "standard";
+              config false;
+              description
+                "IPv4 address type";
+            }
+          }
+          list neighbours {
+            key "ip";
+            description
+              "IPv4 neighbors";
+            leaf ip {
+              type string;
+              config false;
+              description
+                "Neighbor's IP Address";
+            }
+            leaf phys-address {
+              type string;
+              config false;
+              description
+                "Neighbor's physical address (MAC, IPv4 or IPv6 )";
+            }
+            leaf l2-ifindex {
+              type string;
+              config false;
+              description
+                "Neighbor's switchport";
+            }
+            leaf state {
+              type enumeration {
+                enum "incomplete" {
+                  value 1;
+                  description
+                    "A currently resolving cache entry";
+                }
+                enum "reachable" {
+                  value 2;
+                  description
+                    "A confirmed working cache entry";
+                }
+                enum "stale" {
+                  value 4;
+                  description
+                    "An expired cache entry";
+                }
+                enum "delay" {
+                  value 8;
+                  description
+                    "An entry waiting for a timer";
+                }
+                enum "probe" {
+                  value 16;
+                  description
+                    "A cache entry that is currently reprobed";
+                }
+                enum "failed" {
+                  value 32;
+                  description
+                    "An invalid cache entry";
+                }
+                enum "noarp" {
+                  value 64;
+                  description
+                    "A device with no destination cache";
+                }
+                enum "permanent" {
+                  value 128;
+                  description
+                    "A static entry";
+                }
+              }
+              config false;
+              description
+                "Neighbor's state bitmap";
+            }
+          }
+        }
+        container ipv6 {
+          description
+            "IPv6";
+          list addresses {
+            key "ip";
+            description
+              "IPv6 addresses";
+            leaf ip {
+              type string;
+              config false;
+              description
+                "IPv6 Address";
+            }
+            leaf mask {
+              type string;
+              config false;
+              description
+                "Subnet Mask (0-128)";
+            }
+            leaf scope {
+              type enumeration {
+                enum "Universe" {
+                  value 0;
+                  description
+                    "Global address";
+                }
+                enum "Site" {
+                  value 200;
+                  description
+                    "Site-only access";
+                }
+                enum "Link" {
+                  value 253;
+                  description
+                    "On-Link-only access";
+                }
+                enum "Host" {
+                  value 254;
+                  description
+                    "Host-only access";
+                }
+                enum "Nowhere" {
+                  value 255;
+                  description
+                    "Non-existant destination";
+                }
+              }
+              config false;
+              description
+                "Address scope";
+            }
+            leaf flags {
+              type int32;
+              default "0";
+              config false;
+              description
+                "Address flags (kernel: IFA_ADDRESS)";
+            }
+            leaf remote {
+              type string;
+              config false;
+              description
+                "If set, for a point-to-point interface this is the remote IPv6 Address";
+            }
+            leaf type {
+              type enumeration {
+                enum "standard" {
+                  description
+                    "This is a standard type IPv6 Address";
+                }
+                enum "point-to-point" {
+                  description
+                    "This is a point-to-point type IPv6 Address";
+                }
+              }
+              default "standard";
+              config false;
+              description
+                "IPv6 address type";
+            }
+          }
+          list neighbours {
+            key "ip";
+            description
+              "IPv6 neighbors";
+            leaf ip {
+              type string;
+              config false;
+              description
+                "Neighbor's IPv6 Address";
+            }
+            leaf phys-address {
+              type string;
+              config false;
+              description
+                "Neighbor's physical address (MAC, IPv4 or IPv6)";
+            }
+          }
+        }
+      }
+      container settings {
+        description
+          "Interface Settings";
+        leaf admin-status {
+          type enumeration {
+            enum "admin-down" {
+              value 0;
+              description
+                "admin-down";
+            }
+            enum "admin-up" {
+              value 1;
+              description
+                "admin-up";
+            }
+          }
+          default "admin-up";
+          description
+            "Configured admin status of the port. Refer to status/admin-status for applied value";
+        }
+        leaf vrf {
+          if-feature vrf;
+          type string;
+          config false;
+          description
+            "VRF-ID for the interface";
+        }
+        leaf master-ifname {
+          type string;
+          description
+            "Parent bridge ifname";
+        }
+      }
+      leaf l2 {
+        type enumeration {
+          enum "l2-if" {
+            value 1;
+            description
+              "This is a Layer 2 interface";
+          }
+        }
+        config false;
+        description
+          "1=This is a layer 2 interface";
+      }
+      leaf l3 {
+        type enumeration {
+          enum "l3-if" {
+            value 1;
+            description
+              "This is a Layer 3 interface";
+          }
+        }
+        config false;
+        description
+          "1=This is a layer 3 interface";
+      }
+    }
+  }
+}

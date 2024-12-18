@@ -1,0 +1,145 @@
+module at-dot1x-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-dot1x-topology";
+  prefix at-dot1xt;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import ieee802-dot1q-types {
+    prefix dot1q-types;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to IEEE 802.1X topology.";
+
+  revision "2023-10-05" {
+      description "Initial revision";
+  }
+
+  typedef if-role {
+    type enumeration {
+      enum authenticator {
+        description
+          "Interface is an authenticator";
+      }
+      enum supplicant {
+        description
+          "Interface is a supplicant";
+      }
+    }
+  }
+
+  typedef auth-method {
+    type enumeration {
+      enum dot1x {
+        value 1;
+        description
+          "802.1X Authentication";
+      }
+      enum mac {
+        value 2;
+        description
+          "MAC Authentication";
+      }
+      enum web {
+        value 4;
+        description
+          "Web Authentication";
+      }
+      enum macsec {
+        value 8;
+        description
+          "802.1AE MACsec Authentication";
+      }
+    }
+  }
+
+  grouping dot1x-termination-point-attributes {
+    container dot1x-termination-point-attributes {
+      leaf role {
+        type if-role;
+      }
+      container supplicant {
+        when "../role = 'supplicant'";
+        leaf authorized {
+          type boolean;
+          description
+            "Authorized state";
+        }
+        leaf method {
+          type auth-method;
+          description
+            "Authentication method";
+        }
+        leaf username {
+          type string;
+          description
+            "Supplicant username";
+        }
+        leaf ip-address {
+          type inet:ip-address;
+          description
+            "Supplicant IP address";
+        }
+        leaf nas-ip-address {
+          type inet:ip-address;
+          description
+            "NAS IP address";
+        }
+        leaf radius-server-ip-address {
+          type inet:ip-address;
+          description
+            "Radius server used for authentication";
+        }
+        leaf radius-server-group {
+          type string;
+          description
+            "Radius server group used for authentication";
+        }
+        leaf dynamic-vlan {
+          type dot1q-types:vlanid;
+          description
+            "VLAN ID assigned by dynamic vlan creation";
+        }
+      }
+    }
+  }
+
+  grouping dot1x-network-type {
+    description
+      "Indicates the topology type to be 802.1X.";
+    container dot1x-topology {
+      presence "Indicates 802.1X Network Topology.";
+      description
+        "The presence of the container node indicates 802.1X Network Topology.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses dot1x-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nw:node/nt:termination-point" {
+    when '/nw:networks/nw:network/nw:network-types/at-dot1xt:dot1x-topology' {
+      description
+        "Augmentation parameters apply only for networks with 802.1X topology.";
+    }
+    uses dot1x-termination-point-attributes;
+  }
+}
