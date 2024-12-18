@@ -1,0 +1,222 @@
+module at-system {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-system";
+  prefix at-sys;
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+   "This module defines the Allied Telesis system information.";
+
+  revision "2024-08-22" {
+    description
+      "Add leaf 'os-name'.";
+  }
+  revision "2023-04-04" {
+      description "Initial revision";
+  }
+
+  container system {
+    leaf bootloader-version {
+      description
+        "Bootloader version";
+      config false;
+      type string;
+    }
+    leaf host-version {
+      description
+        "Host Version";
+      config false;
+      type string;
+    }
+    leaf current-software {
+      description
+        "Current software filename";
+      config false;
+      type string;
+    }
+    leaf software-version {
+      description
+        "Software version";
+      config false;
+      type string;
+    }
+    leaf os-name {
+      description
+        "Operating system name";
+      config false;
+      type string;
+    }
+    leaf build-date {
+      description
+        "Software build date";
+      config false;
+      type string;
+    }
+    leaf system-name {
+      description
+        "System name";
+      config false;
+      type string;
+    }
+    leaf system-contact {
+      description
+        "System Contact";
+      config false;
+      type string;
+    }
+    leaf system-location {
+      description
+        "System Location";
+      config false;
+      type string;
+    }
+    leaf system-uuid {
+      description
+        "System Unique Identifier";
+      config false;
+      type string;
+    }
+    container configuration {
+      description
+        "System configuration";
+      leaf state {
+        description
+          "The state of the system configuration";
+        default "unknown";
+        type enumeration {
+          enum "unknown" {
+            value 0;
+            description
+              "The system configuration state cannot be known";
+          }
+          enum "saved" {
+            value 1;
+            description
+              "The system configuration is saved to the boot configuration file";
+          }
+          enum "unsaved" {
+            value 2;
+            description
+              "The system configuration is unsaved and the changes will be lost if the device is rebooted";
+          }
+        }
+      }
+    }
+    leaf uptime {
+      description
+        "System uptime";
+      config false;
+      type string;
+    }
+    leaf reboot {
+      description
+        "Command to halt and perform a cold restart";
+      default "no";
+      type enumeration {
+        enum "no" {
+          value 0;
+          description "The device is not rebooting";
+        }
+        enum "now" {
+          value 1;
+          description "The device is rebooting now";
+        }
+      }
+    }
+    container ram {
+      description
+        "Ram memory information";
+      leaf total {
+        description
+          "Total RAM (kB)";
+        config false;
+        type string;
+      }
+      leaf free {
+        description
+          "Total free RAM (kB)";
+        config false;
+        type string;
+      }
+    }
+    container flash {
+      description
+        "Flash filesystem information";
+      leaf total {
+        description
+          "Total flash filesystem storage space";
+        config false;
+        type string;
+      }
+      leaf available {
+        description
+          "Available flash space";
+        config false;
+        type string;
+      }
+      leaf used {
+        description
+          "Used flash space";
+        config false;
+        type string;
+      }
+      leaf use {
+        description
+          "Percent of flash used";
+        config false;
+        type uint8 {
+           range "0..100";
+        }
+      }
+    }
+    leaf cpu-load {
+      description
+        "Current CPU load (0-100%)";
+      config false;
+      type uint8 {
+        range "0..100";
+      }
+    }
+    list storage {
+      key "index";
+      description
+        "Plug-in storage devices";
+      config false;
+      leaf index {
+        description
+          "Index of this storage device starting from 1.";
+          type uint8;
+      }
+      leaf device {
+        description
+          "Device that is mounted";
+        type string;
+      }
+      leaf path {
+        description
+          "Mount location";
+        type string;
+      }
+      leaf total {
+        description
+          "Total disk space in bytes";
+        type uint64;
+      }
+      leaf used {
+        description
+          "Used disk space in bytes";
+        type uint64;
+      }
+      leaf available {
+        description
+          "Available disk space in bytes";
+        type uint64;
+      }
+    }
+  }
+}

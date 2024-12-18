@@ -1,0 +1,230 @@
+ module at-openconfig-openflow-deviation {
+  yang-version "1";
+  namespace "http://alliedtelesis.com/ns/yang/at-openconfig-openflow-deviation";
+  prefix "at-oc-of-dev";
+
+  import openconfig-system { prefix oc-sys; }
+  import openconfig-openflow { prefix oc-of; }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the openconfig-openflow module.";
+
+  revision 2024-11-18 {
+    description
+      "Add pattern for controller name. Deviate controller and connection keys so that
+       they are no longer leafrefs to variables being deviated as not-supported.";
+  }
+
+  revision 2023-12-27 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:name {
+    deviate replace {
+      type string {
+        pattern "[a-zA-Z0-9_-]{1,64}";
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:config/oc-of:name {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:state/oc-of:name {
+    deviate replace {
+      type string;
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:config/oc-of:priority {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:state/oc-of:priority {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:config/oc-of:source-interface {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:state/oc-of:source-interface {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:config/oc-of:certificate-id {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:state/oc-of:certificate-id {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:aux-id {
+    deviate replace {
+      type uint8 {
+        range "0";
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:config/oc-of:aux-id {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:state/oc-of:aux-id {
+    deviate replace {
+      type uint8 {
+        range "0";
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:config/oc-of:transport {
+    deviate replace {
+      type enumeration {
+        enum TCP {
+          description
+            "Transmission Control Protocol (TCP).";
+        }
+        enum TLS {
+          description
+            "Transport Layer Security (TLS).";
+        }
+        enum PSSL {
+          description
+            "Passive Secure Sockets Layer (PSSL).";
+        }
+        enum PTCP {
+          description
+            "Passive Transmission Control Protocol (PTCP).";
+        }
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:state/oc-of:transport {
+    deviate replace {
+      type enumeration {
+        enum TCP {
+          description
+            "Transmission Control Protocol (TCP).";
+        }
+        enum TLS {
+          description
+            "Transport Layer Security (TLS).";
+        }
+        enum PSSL {
+          description
+            "Passive Secure Sockets Layer (PSSL).";
+        }
+        enum PTCP {
+          description
+            "Passive Transmission Control Protocol (PTCP).";
+        }
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:config/oc-of:port {
+    deviate replace {
+      type uint16 {
+        range "1..65535";
+      }
+      default 6553;
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:config/oc-of:inactivity-probe {
+      deviate replace {
+        type uint32 {
+          range "5..2073600";
+        }
+        units seconds;
+      }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:state/oc-of:inactivity-probe {
+      deviate replace {
+        type uint32 {
+          range "5..2073600";
+        }
+        units seconds;
+      }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:config/oc-of:failure-mode {
+    deviate replace {
+      type enumeration {
+        enum SECURE {
+          description
+            "Packets and messages destined to the controllers are
+            dropped. Flow entries continue to expire according to
+            their timeouts. This is the default value.";
+        }
+        enum STANDALONE {
+          description
+            "Processes all packets using the OFPP_NORMAL reserved
+            port. The switch acts as a legacy Ethernet switch or
+            router.";
+        }
+        enum SECURE_NO_EXPIRY {
+          description
+            "Packets and messages destined to the controllers are
+            dropped. Flow entries do not expire.";
+        }
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:state/oc-of:failure-mode {
+    deviate replace {
+      type enumeration {
+        enum SECURE {
+          description
+            "Packets and messages destined to the controllers are
+            dropped. Flow entries continue to expire according to
+            their timeouts. This is the default value.";
+        }
+        enum STANDALONE {
+          description
+            "Processes all packets using the OFPP_NORMAL reserved
+            port. The switch acts as a legacy Ethernet switch or
+            router.";
+        }
+        enum SECURE_NO_EXPIRY {
+          description
+            "Packets and messages destined to the controllers are
+            dropped. Flow entries do not expire.";
+        }
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:config/oc-of:backoff-interval {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:state/oc-of:backoff-interval {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:config/oc-of:max-backoff {
+    deviate not-supported;
+  }
+
+  deviation /oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:state/oc-of:max-backoff {
+    deviate not-supported;
+  }
+}

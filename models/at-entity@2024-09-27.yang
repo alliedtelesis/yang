@@ -1,0 +1,203 @@
+module at-entity {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-entity";
+  prefix at-entity;
+
+  import ietf-inet-types { prefix inet; }
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description "This document defines a YANG module for
+    Allied Telesis Entities";
+
+  revision 2024-09-27 {
+    description "Initial revision.";
+    reference
+      "1.0.0
+
+       RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  grouping subnets-full-parameters {
+    description "Common parameters for subnets";
+    leaf id {
+      type string;
+      description "Unique list index ip/mask%ifname. Path name has the slash escaped. e.g. 192.168.1.0_24%eth0";
+    }
+    leaf ifname {
+      type string;
+      description "Interface Name";
+    }
+    leaf ifindex {
+      type uint32;
+      default "0";
+      description "Interface ifindex";
+    }
+    leaf subnet {
+      type union {
+        type inet:ipv4-address;
+        type inet:ipv6-address;
+      }
+      description "IP Subnet";
+    }
+    leaf prefix-len {
+      type uint8 {
+        range '0..128';
+      }
+      description "IP prefix length";
+    }
+  }
+
+  list entities {
+    key "name";
+    description "List of entities indexed by top-level zone";
+    leaf name {
+      type string {
+        pattern '^([a-zA-Z0-9_\-]{1,64})$';
+      }
+      description "Name of zone";
+    }
+    leaf fullname {
+      type string {
+        pattern '^([a-zA-Z0-9_\-]{1,64})$';
+      }
+      description "Name of zone";
+    }
+    leaf owner {
+      type enumeration {
+        enum user {
+          description "A user configured this entry";
+        }
+        enum url-offload {
+          description "The URL Offload feature configured this entry";
+        }
+      }
+      default "user";
+      description "Who created this zone entry?";
+    }
+    list children {
+      key "name";
+      description "List of networks";
+      leaf name {
+        type string {
+          pattern '^([a-zA-Z0-9_\-]{1,64})$';
+        }
+        description "Name of network";
+      }
+      leaf fullname {
+        type string {
+          pattern '^([a-zA-Z0-9_\-]{1,64})\.([a-zA-Z0-9_\-]{1,64})$';
+        }
+        description "Name of zone DOT Name of network";
+      }
+      leaf-list dynamic-subnets {
+        type string {
+          pattern '((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))|((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(/(([0-9])|([0-9]{2})|(1[0-1][0-9])|(12[0-8]))))?';
+        }
+        config false;
+        description "Dynamically added network addresses that are part of this network. ip/mask. Path name has the slash escaped. e.g. 192.168.1.0%2F24";
+      }
+      leaf-list subnets {
+        type string {
+          pattern '((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))|((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(/(([0-9])|([0-9]{2})|(1[0-1][0-9])|(12[0-8]))))(%(.*))?';
+        }
+        description "Network address (with interface name) that are part of this network. ip/mask%ifname. Path name has the slash escaped. e.g. 192.168.1.0%2F24%eth0";
+      }
+      container dynamic {
+          description "Places from which to acquire IP addresses";
+          container ipv4 {
+            description "IPv4 dynamic network sources";
+            leaf-list geoip {
+              type string;
+              description "List of GeoIP zones to dynamically learn IPv4 address from";
+            }
+          }
+          container ipv6 {
+            description "IPv6 dynamic network sources";
+            leaf-list geoip {
+              type string;
+              description "List of GeoIP zones to dynamically learn IPv6 address from";
+            }
+          }
+        }
+      list subnets-full {
+        key "id";
+        config false;
+        uses subnets-full-parameters;
+        description "Network address (with interface index) that are part of this network";
+      }
+      list children {
+        key "name";
+        description "List of hosts";
+        leaf name {
+          type string {
+            pattern '^([a-zA-Z0-9_\-]{1,64})$';
+          }
+          description "Name of host";
+        }
+        leaf fullname {
+          type string {
+            pattern '^([a-zA-Z0-9_\-]{1,64})\.([a-zA-Z0-9_\-]{1,64})\.([a-zA-Z0-9_\-]{1,64})$';
+          }
+          description "Name of zone DOT Name of network DOT Name of host";
+        }
+        leaf-list dynamic-subnets {
+          type string {
+             pattern '((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))|((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(/(([0-9])|([0-9]{2})|(1[0-1][0-9])|(12[0-8]))))';
+          }
+          description "IP address(es) and mask for this host. Dynamic flag/ip/mask. Path name has the slash escaped e.g. 192.127.1.0%2F24";
+        }
+        leaf-list subnets {
+          type string {
+             pattern '((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))|((:|[0-9a-fA-F]{0,4}):)([0-9a-fA-F]{0,4}:){0,5}((([0-9a-fA-F]{0,4}:)?(:|[0-9a-fA-F]{0,4}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(/(([0-9])|([0-9]{2})|(1[0-1][0-9])|(12[0-8]))))';
+          }
+          description "IP address(es) and mask for this host. Dynamic flag/ip/mask. Path name has the slash escaped e.g. 192.127.1.0%2F24";
+        }
+        list subnets-full {
+          key "id";
+          config false;
+          uses subnets-full-parameters;
+          description "Network address (with interface index) that are part of this network";
+        }
+        leaf-list macs {
+          type string {
+            pattern '([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})';
+          }
+          description "MAC addresses for this host";
+        }
+        container dynamic {
+          description "Places from which to acquire IP addresses";
+          container ipv4 {
+            description "IPv4 Dynamically learned hosts";
+            leaf-list interfaces {
+              type string;
+              description "List of interfaces to dynamically learn IPv4 address from";
+            }
+            leaf-list fqdn {
+              type string;
+              description "List of IPv4 FQDN's to dynamically learn via DNS snooping";
+            }
+          }
+          container ipv6 {
+            description "IPv6 Dynamically learned hosts";
+            leaf-list interfaces {
+              type string;
+              description "List of interfaces to dynamically learn IPv6 address from";
+            }
+            leaf-list fqdn {
+              type string;
+              description "List of IPv6 FQDN's to dynamically learn via DNS snooping";
+            }
+          }
+        }
+      }
+    }
+  }
+}

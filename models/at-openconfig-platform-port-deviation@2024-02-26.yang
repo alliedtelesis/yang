@@ -1,0 +1,38 @@
+module at-openconfig-platform-port-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-openconfig-platform-port-deviation";
+  prefix at-oc-plat-port-dev;
+
+  import openconfig-platform {
+    prefix oc-platform;
+  }
+  import openconfig-platform-port {
+    prefix oc-port;
+  }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the openconfig-platform-port module.";
+
+  revision 2024-02-26 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+  deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode/oc-port:groups/oc-port:group/oc-port:config {
+    deviate not-supported;
+  }
+  deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode/oc-port:groups/oc-port:group/oc-port:index {
+    deviate replace {
+      type string;
+      config false;
+    }
+  }
+}

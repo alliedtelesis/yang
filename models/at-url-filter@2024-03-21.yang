@@ -1,0 +1,204 @@
+module at-url-filter {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-url-filter";
+  prefix at-urlfilt;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for Allied Telesis URL Filtering";
+
+  revision 2024-03-21 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container url-filter {
+    container status {
+      leaf engine {
+        type enumeration {
+          enum unset {
+            value 0;
+            description
+              "The status is unset";
+          }
+          enum disabled {
+            value 1;
+            description
+              "URL Filter is disabled";
+          }
+          enum installing {
+            value 2;
+            description
+              "Installing the URL Filter blacklists and whitelists";
+          }
+          enum running {
+            value 3;
+            description
+              "URL Filter is enabled and running";
+          }
+        }
+        default "unset";
+        config false;
+        description
+          "Status of the URL Filter engine";
+      }
+      leaf provider {
+        type enumeration {
+          enum disabled {
+            value 1;
+            description
+              "URL Filter provider service is not configured";
+          }
+          enum enabled {
+            value 2;
+            description
+              "URL Filter provider service is configured and licensed";
+          }
+          enum unlicensed {
+            value 3;
+            description
+              "URL Filter provider service is configured but unlicensed";
+          }
+        }
+        default "disabled";
+        config false;
+        description
+          "Status of the URL Filter provider service";
+      }
+      description
+        "URL Filtering status";
+    }
+    leaf events {
+      type uint64;
+      default 0;
+      config false;
+      description
+        "Number of detected events";
+    }
+    container settings {
+      leaf protect {
+        type enumeration {
+          enum disable {
+            value 0;
+            description
+              "Disable URL Filter";
+          }
+          enum enable {
+            value 1;
+            description
+              "Enable URL Filter";
+          }
+        }
+        default "disable";
+        description
+          "URL Filter configuration";
+      }
+      container provider {
+        leaf name {
+          type enumeration {
+            enum kaspersky {
+              description
+                "Kaspersky Web Filter blacklist";
+            }
+          }
+          description
+            "Name of the URL Filter provider";
+        }
+        leaf version {
+          type string;
+          config false;
+          description
+            "Current version of the provider URL Filter blacklist";
+        }
+        leaf update-interval {
+          type int32 {
+            range "0 | 10..525600";
+          }
+          default 60;
+          description
+            "Interval for provider resource update checking in minutes";
+        }
+        leaf entry-count {
+          type string;
+          config false;
+          description
+            "Number of URL match criteria in the provider blacklist";
+        }
+        description
+          "URL list provider";
+      }
+      list blacklists {
+        key "location";
+        leaf location {
+          type string;
+          description
+            "Custom blacklist path/filename";
+        }
+        leaf entry-count {
+          type string;
+          config false;
+          description
+            "Number of URL match criteria in the custom blacklist (1000 max). Negative indicates limit exceeded";
+        }
+        description
+          "A custom blacklist. Path key is location value with forward slashes encoded as %2F.";
+      }
+      list whitelists {
+        key "location";
+        leaf location {
+          type string;
+          description
+            "Custom whitelist path/filename";
+        }
+        leaf entry-count {
+          type string;
+          config false;
+          description
+            "Number of URL match criteria in the custom whitelist (1000 max). Negative indicates limit exceeded";
+        }
+        description
+          "A custom whitelist. Path key is location value with forward slashes encoded as %2F.";
+      }
+      container logging {
+        leaf url-requests {
+          type enumeration {
+            enum disable {
+              value 0;
+              description
+                "Disable logging of http url requests";
+            }
+            enum enable {
+              value 1;
+              description
+                "Enable logging of http url requests";
+            }
+          }
+          default "disable";
+          description
+            "Enable/disable logging of http url requests";
+        }
+        description
+          "URL logging configuration";
+      }
+      leaf license {
+        type string;
+        description
+          "Feature license for stand-alone operation";
+      }
+      description
+        "URL Filtering configuration";
+    }
+    description
+      "URL Filtering configuration and state";
+  }
+}

@@ -1,0 +1,306 @@
+module at-openconfig-system-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-openconfig-system-deviation";
+  prefix at-oc-sys-dev;
+
+  import openconfig-system {
+    prefix oc-sys;
+  }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the openconfig-system module.";
+
+  revision 2024-11-06 {
+    description
+      "Add patterns for login-banner and motd-banner.";
+  }
+
+  revision 2023-06-28 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  deviation /oc-sys:system/oc-sys:config/oc-sys:hostname {
+    deviate replace {
+      type string {
+        length "1..64";
+        pattern '([-_a-zA-Z0-9]{1,64})';
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-sys:config/oc-sys:login-banner {
+    deviate replace {
+      type string {
+        pattern "([ -~\t]{0,768}|[ -~\t]{0,768}\n[ -~\t\n]{0,4096})";
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-sys:config/oc-sys:motd-banner {
+    deviate replace {
+      type string {
+        pattern "([ -~\t]{0,768})";
+      }
+    }
+    description
+      "Setting this variable to 'default' will result in the default
+       MOTD being set, for example something like:
+         AlliedWare Plus (TM) 5.5.3 04/05/23 12:00:00
+       on AlliedWare Plus devices.";
+  }
+
+  deviation /oc-sys:system/oc-sys:state/oc-sys:hostname {
+    deviate replace {
+      type string {
+        length "1..64";
+        pattern '([-_a-zA-Z0-9]{1,64})';
+      }
+    }
+  }
+
+  deviation /oc-sys:system/oc-sys:state/oc-sys:last-configuration-timestamp {
+    deviate not-supported;
+    description
+      "There is no system-wide variable that can record when a configuration
+       change last occurred, across CLI, WebAPIs and management protocols.";
+  }
+
+  deviation /oc-sys:system/oc-sys:clock/oc-sys:config/oc-sys:timezone-name {
+    deviate replace {
+      type string {
+        pattern "[a-zA-Z]+ UTC[+-][0-2][0-9]:[0-5][0-9]";
+      }
+    }
+    description
+      "An arbitrary user-defined string to denote the timezone this
+       clock is running in, followed by an offset from UTC.";
+  }
+  deviation /oc-sys:system/oc-sys:clock/oc-sys:state/oc-sys:timezone-name {
+    deviate replace {
+      type string {
+        pattern "[a-zA-Z]+ UTC[+-][0-2][0-9]:[0-5][0-9]";
+      }
+    }
+    description
+      "An arbitrary user-defined string to denote the timezone this
+       clock is running in, followed by an offset from UTC.";
+  }
+
+  deviation /oc-sys:system/oc-sys:alarms/oc-sys:alarm/oc-sys:state/oc-sys:resource {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:alarms/oc-sys:alarm/oc-sys:state/oc-sys:time-created {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:alarms/oc-sys:alarm/oc-sys:state/oc-sys:type-id {
+    deviate replace {
+      type string;
+    }
+  }
+
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:total/oc-sys:avg {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:total/oc-sys:min {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:total/oc-sys:max {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:total/oc-sys:interval {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:total/oc-sys:min-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:total/oc-sys:max-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:user/oc-sys:avg {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:user/oc-sys:min {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:user/oc-sys:max {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:user/oc-sys:interval {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:user/oc-sys:min-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:user/oc-sys:max-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:kernel/oc-sys:avg {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:kernel/oc-sys:min {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:kernel/oc-sys:max {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:kernel/oc-sys:interval {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:kernel/oc-sys:min-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:kernel/oc-sys:max-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:nice/oc-sys:avg {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:nice/oc-sys:min {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:nice/oc-sys:max {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:nice/oc-sys:interval {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:nice/oc-sys:min-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:nice/oc-sys:max-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:idle/oc-sys:avg {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:idle/oc-sys:min {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:idle/oc-sys:max {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:idle/oc-sys:interval {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:idle/oc-sys:min-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:idle/oc-sys:max-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:wait/oc-sys:avg {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:wait/oc-sys:min {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:wait/oc-sys:max {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:wait/oc-sys:interval {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:wait/oc-sys:min-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:wait/oc-sys:max-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:hardware-interrupt/oc-sys:avg {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:hardware-interrupt/oc-sys:min {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:hardware-interrupt/oc-sys:max {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:hardware-interrupt/oc-sys:interval {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:hardware-interrupt/oc-sys:min-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:hardware-interrupt/oc-sys:max-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:software-interrupt/oc-sys:avg {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:software-interrupt/oc-sys:min {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:software-interrupt/oc-sys:max {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:software-interrupt/oc-sys:interval {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:software-interrupt/oc-sys:min-time {
+    deviate not-supported;
+  }
+  deviation /oc-sys:system/oc-sys:cpus/oc-sys:cpu/oc-sys:state/oc-sys:software-interrupt/oc-sys:max-time {
+    deviate not-supported;
+  }
+
+  deviation "/oc-sys:system/oc-sys:mount-points" {
+    deviate not-supported;
+    description
+      "Mount points not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:dns" {
+    deviate not-supported;
+    description
+      "DNS not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:ntp" {
+    deviate not-supported;
+    description
+      "NTP not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:ssh-server" {
+    deviate not-supported;
+    description
+      "SSH server not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:telnet-server" {
+    deviate not-supported;
+    description
+      "Telnet server not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:logging" {
+    deviate not-supported;
+    description
+      "Logging not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:aaa" {
+    deviate not-supported;
+    description
+      "AAA not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:messages" {
+    deviate not-supported;
+    description
+      "Messages not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:license" {
+    deviate not-supported;
+    description
+      "Licenses not supported in 5.5.3-1";
+  }
+  deviation "/oc-sys:system/oc-sys:mac-address" {
+    deviate not-supported;
+    description
+      "MAC addresses not supported in 5.5.3-1";
+  }
+}

@@ -1,0 +1,954 @@
+module at-tunnel {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-tunnel";
+  prefix at-tunnel;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for Tunnels";
+
+  revision 2020-10-05 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  typedef tunnel-mode {
+    type enumeration {
+      enum unset {
+        value 0;
+        description "Mode is unset";
+      }
+      enum ipip {
+        value 1;
+        if-feature ipip;
+        description "IP Encapsulation within IP (RFC2003)";
+      }
+      enum ipv6ip {
+        value 2;
+        if-feature ipv6ip;
+        description "Manual IPv6 tunnels";
+      }
+      enum ipv6 {
+        value 5;
+        if-feature ipv6;
+        description "IPv6 Tunneling (RFC2473)";
+      }
+      enum gre {
+        value 6;
+        if-feature gre;
+        description "Generic Routing Encapsulation";
+      }
+      enum gre-ipv6 {
+        value 7;
+        if-feature gre-ipv6;
+        description "Generic Routing Encapsulation over IPv6";
+      }
+      enum l2tpv3-ipv4 {
+        value 8;
+        if-feature l2tpv3-ipv4;
+        description "Layer 2 Tunneling Protocol (unmanaged over IPv4)";
+      }
+      enum l2tpv3-ipv6 {
+        value 9;
+        if-feature l2tpv3-ipv6;
+        description "Layer 2 Tunneling Protocol (unmanaged over IPv6)";
+      }
+      enum ipsec {
+        value 10;
+        if-feature ipsec;
+        description "Internet Protocol Security Tunnel Mode (IPv4)";
+      }
+      enum ipsec-ipv6 {
+        value 11;
+        if-feature ipsec-ipv6;
+        description "Internet Protocol Security Tunnel Mode (IPv6)";
+      }
+      enum openvpn-tap {
+        value 12;
+        if-feature openvpn-tap;
+        description "OpenVPN Layer 2 Tunnel";
+      }
+      enum openvpn-tun {
+        value 13;
+        if-feature openvpn-tun;
+        description "OpenVPN Layer 3 Tunnel";
+      }
+      enum mape {
+        value 14;
+        if-feature mape;
+        description "Mapping of Address and Port with Encapsulation (MAP-E)";
+      }
+      enum lw4o6 {
+        value 15;
+        if-feature lw4o6;
+        description "Lightweight 4over6 (lw4o6)";
+      }
+      enum dslite {
+        value 16;
+        if-feature dslite;
+        description "IPv6 dual-stack lite (DS-Lite)";
+      }
+      enum gre-multipoint {
+        value 17;
+        if-feature gre-multipoint;
+        description "Multipoint Generic Routing Encapsulation";
+      }
+      enum map4to6 {
+        value 18;
+        if-feature map4to6;
+        description "Mapping of IPv4 to IPv6 Address Tunnel";
+      }
+      enum 464xlat {
+        value 19;
+        if-feature xlat464;
+        description "Combination of Stateful and Stateless Translation (464XLAT)";
+      }
+      enum ipsec-multipoint {
+        value 20;
+        if-feature ipsec-multipoint;
+        description "Multipoint IPsec tunnels";
+      }
+      enum provisioned {
+        value 21;
+        if-feature provisioned;
+        description "Provisioned (dynamic) tunnels";
+      }
+    }
+    description "Mode of the tunnel";
+  }
+
+  feature ipip {
+    description "This feature represents the ability to configure ipip tunnels";
+  }
+
+  feature ipv6ip {
+    description "This feature represents the ability to configure ipv6ip tunnels";
+  }
+
+  feature ipv6 {
+    description "This feature represents the ability to configure ipv6 tunnels";
+  }
+
+  feature gre {
+    description "This feature represents the ability to configure gre tunnels";
+  }
+
+  feature gre-ipv6 {
+    description "This feature represents the ability to configure gre-ipv6 tunnels";
+  }
+
+  feature l2tpv3-ipv4 {
+    description "This feature represents the ability to configure l2tpv3-ipv4 tunnels";
+  }
+
+  feature l2tpv3-ipv6 {
+    description "This feature represents the ability to configure l2tpv3-ipv6 tunnels";
+  }
+
+  feature ipsec {
+    description "This feature represents the ability to configure ipsec tunnels";
+  }
+
+  feature ipsec-ipv6 {
+    description "This feature represents the ability to configure ipsec-ipv6 tunnels";
+  }
+
+  feature openvpn-tap {
+    description "This feature represents the ability to configure openvpn-tap tunnels";
+  }
+
+  feature openvpn-tun {
+    description "This feature represents the ability to configure openvpn-tun tunnels";
+  }
+
+  feature mape {
+    description "This feature represents the ability to configure mape tunnels";
+  }
+
+  feature lw4o6 {
+    description "This feature represents the ability to configure lw4o6 tunnels";
+  }
+
+  feature dslite {
+    description "This feature represents the ability to configure dslite tunnels";
+  }
+
+  feature gre-multipoint {
+    description "This feature represents the ability to configure gre-multipoint tunnels";
+  }
+
+  feature map4to6 {
+    description "This feature represents the ability to configure map4to6 tunnels";
+  }
+
+  feature xlat464 {
+    description "This feature represents the ability to configure 464xlat tunnels";
+  }
+
+  feature ipsec-multipoint {
+    description "This feature represents the ability to configure ipsec-multipoint tunnels";
+  }
+
+  feature provisioned {
+    description "This feature represents the ability to configure provisioned tunnels";
+  }
+
+  container tunnel {
+    description "Tunnel configuration";
+    container settings {
+      description "Tunnel global settings";
+      leaf debug {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable tunnel debug";
+          }
+          enum enable {
+            value 1;
+            description "Enable tunnel debug";
+          }
+          enum verbose {
+            value 2;
+            description "Enable verbose debug";
+          }
+        }
+        default disable;
+        description "Tunnel debug";
+      }
+      container defaults {
+        description "Default values";
+        leaf l2tpv3-port {
+          type uint32 {
+            range "1..65535";
+          }
+          default 1701;
+          description "UDP Port Number to listen on (1-65535)";
+        }
+      }
+      leaf security-reprocessing {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable UTM processing";
+          }
+          enum enable {
+            value 1;
+            description "Enable UTM processing";
+          }
+        }
+        description "Whether security reprocessing will be done on tunnels";
+      }
+    }
+    list vti {
+      key "name";
+      description "List of Virtual Tunnel Interfaces";
+      leaf name {
+        type string {
+          pattern "tunnel([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])";
+        }
+        description "Name of the tunnel (tunnel[0-65535])";
+      }
+      leaf mode {
+        type tunnel-mode;
+        default unset;
+        description "Mode of the tunnel";
+      }
+      leaf mode-selected {
+        type tunnel-mode;
+        default unset;
+        config false;
+        description "Selected Mode for the tunnel";
+      }
+      leaf family {
+        type enumeration {
+          enum AF_INET {
+            value 2;
+            description "IPv4 Transport Protocol";
+          }
+          enum AF_INET6 {
+            value 10;
+            description "IPv6 Transport Protocol";
+          }
+        }
+        default AF_INET;
+        config false;
+        description "Protocol family of the transport";
+      }
+      leaf state {
+        type enumeration {
+          enum ok {
+            value 1;
+            description "Configuration is valid and tunnel is active";
+          }
+          enum unconfigured {
+            value 0;
+            description "Lacking required configuration";
+          }
+          enum internal {
+            value -1;
+            description "Internal Error";
+          }
+          enum mode {
+            value -2;
+            description "Invalid mode";
+          }
+          enum ipv4 {
+            value -3;
+            description "IPv4 Address invalid for mode";
+          }
+          enum ipv6 {
+            value -4;
+            description "IPv6 Address invalid for mode";
+          }
+          enum source {
+            value -5;
+            description "Source invalid for mode";
+          }
+          enum destination {
+            value -6;
+            description "Destination invalid for mode";
+          }
+          enum checksum {
+            value -7;
+            description "Checksum invalid for mode";
+          }
+          enum ttl {
+            value -8;
+            description "TTL invalid for mode";
+          }
+          enum local-name {
+            value -9;
+            description "Local invalid for mode";
+          }
+          enum remote-name {
+            value -10;
+            description "Remote invalid for mode";
+          }
+          enum tos {
+            value -11;
+            description "TOS invalid for mode";
+          }
+          enum encapsulation {
+            value -12;
+            description "Encapsulation invalid for mode";
+          }
+          enum listen-port {
+            value -13;
+            description "Listen port invalid for mode";
+          }
+          enum radius-server {
+            value -14;
+            description "Radius server invalid for mode";
+          }
+          enum tag {
+            value -15;
+            description "Tag invalid for mode";
+          }
+          enum local-id {
+            value -16;
+            description "Local ID invalid for mode";
+          }
+          enum remote-id {
+            value -17;
+            description "Remote ID invalid for mode";
+          }
+          enum max-tunnels {
+            value -18;
+            description "Maximum tunnel count exceeded";
+          }
+          enum protection {
+            value -19;
+            description "Protection invalid for mode";
+          }
+          enum listen-port-in-use {
+            value -20;
+            description "Listen port in use";
+          }
+          enum protection-profile {
+            value -21;
+            description "Protection IPsec profile does not exist";
+          }
+          enum local-ts {
+            value -22;
+            description "Local traffic selector invalid for mode";
+          }
+          enum remote-ts {
+            value -23;
+            description "Remote traffic selector invalid for mode";
+          }
+          enum high-security-disabled {
+            value -24;
+            description "High Security disabled on this device";
+          }
+          enum openvpn-cipher {
+            value -25;
+            description "Cipher invalid for this mode";
+          }
+          enum openvpn-auth {
+            value -26;
+            description "Authentication invalid for this mode";
+          }
+          enum openvpn-expiry-seconds {
+            value -27;
+            description "Expiry invalid for this mode";
+          }
+          enum openvpn-expiry-kbytes {
+            value -28;
+            description "Expiry invalid for this mode";
+          }
+          enum softwire {
+            value -29;
+            description "Softwire Configuration name invalid for this mode";
+          }
+          enum softwire-incomplete {
+            value -30;
+            description "Softwire Configuration not complete";
+          }
+          enum dhcp-interface {
+            value -31;
+            description "Tunnel destination dhcp interface invalid for this mode";
+          }
+          enum endpoint {
+            value -32;
+            description "Tunnel remote endpoint address invalid for this mode";
+          }
+          enum endpoint-dynamic {
+            value -33;
+            description " Dynamic tunnel remote endpoint learning invalid for this mode";
+          }
+          enum df {
+            value -34;
+            description "DF invalid for mode";
+          }
+          enum softwire-dad-disable {
+            value -35;
+            description "Softwire dad disable invalid for this mode";
+          }
+          enum 4to6-mapping {
+            value -36;
+            description "IPv4 to IPv6 Mappings Configuration name invalid for this mode";
+          }
+          enum 4to6-mapping-incomplete {
+            value -37;
+            description "IPv4 to IPv6 Mappings Configuration not complete";
+          }
+          enum openvpn-tls-version-min {
+            value -38;
+            description "Minimum TLS version invalid for this mode";
+          }
+          enum unlicensed {
+            value -39;
+            description "Tunnel is unlicensed";
+          }
+          enum oper-status {
+            value -40;
+            description "Tunnel oper-status-control is invalid for this mode";
+          }
+          enum tls-crypt {
+            value -41;
+            description "Issue with TLS-Crypt file";
+          }
+          enum inline-processing {
+            value -42;
+            description "Inline processing not available for this mode";
+          }
+          enum openvpn-ifconfig-pool {
+            value -43;
+            description "Ifconfig pool invalid for this mode";
+          }
+          enum openvpn-ipv6-pool {
+            value -44;
+            description "IPv6 pool invalid for this mode";
+          }
+          enum source-ipv4 {
+            value -45;
+            description "IPv4 source invalid for this mode";
+          }
+          enum destination-ipv4 {
+            value -46;
+            description "IPv4 destination invalid for this mode";
+          }
+          enum source-ipv6 {
+            value -47;
+            description "IPv6 source invalid for this mode";
+          }
+          enum destination-ipv6 {
+            value -48;
+            description "IPv6 destination invalid for this mode";
+          }
+          enum provisioning {
+            value -49;
+            description "Tunnel provisioning commands invalid for this mode";
+          }
+          enum no-vne-info {
+            value -50;
+            description "No valid information received from the VNE server";
+          }
+          enum openvpn-routes {
+            value -51;
+            description "OpenVPN routes invalid for this mode";
+          }
+        }
+        default unconfigured;
+        config false;
+        description "State of the tunnel (negative numbers imply error states)";
+      }
+      leaf source {
+        type string;
+        description "Tunnel source IPv4/IPv6 Address or interface name";
+      }
+      leaf source-ip {
+        type string;
+        config false;
+        description "Tunnel source in-use IPv4/IPv6 Address when interface name is specified";
+      }
+      leaf destination {
+        type string;
+        description "Tunnel destination IPv4/IPv6 Address, hostname, dhcp, or 'dynamic' for dynamic peer";
+      }
+      leaf destination-ip {
+        type string;
+        config false;
+        description "Tunnel destination in-use IPv4/IPv6 Address when hostname is specified";
+      }
+      leaf dhcp-interface {
+        type string;
+        description "Tunnel destination dhcp interface";
+      }
+      leaf dhcp-address {
+        type string;
+        config false;
+        description "Tunnel destination in-use IPv4/IPv6 Address or domain name when dhcp is specified";
+      }
+      leaf checksum {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable tunnel checksumming";
+          }
+          enum enable {
+            value 1;
+            description "Enable tunnel checksumming";
+          }
+        }
+        default disable;
+        description "Tunnel checksumming (GRE only)";
+      }
+      leaf df {
+        type enumeration {
+          enum clear {
+            value 0;
+            description "Clear the DF bit (allow fragmentation of the encapsulated packet)";
+          }
+          enum set {
+            value 1;
+            description "Set the DF bit (prevent fragmentation of the encapsulated packet)";
+          }
+        }
+        default set;
+        description "Outer header DF bit configuration";
+      }
+      leaf ttl {
+        type uint8 {
+          range "1..255";
+        }
+        default "64";
+        description "TTL to set in outer headers (1-255)";
+      }
+      leaf tos {
+        type uint8 {
+          range "4..252";
+        }
+        description "Tunnel tos dscp (4-252)";
+      }
+      leaf local-name {
+        type string {
+          pattern "^.{1,127}$";
+        }
+        description "Local name (FQDN or UFQDN)";
+      }
+      leaf remote-name {
+        type string {
+          pattern "^.{1,127}$";
+        }
+        description "Remote name (FQDN or UFQDN)";
+      }
+      leaf paired-selectors {
+        type enumeration {
+          enum combination {
+            value 0;
+            description "Traffic selectors used in all combinations";
+          }
+          enum paired {
+            value 1;
+            description "Traffic selectors used in pairs";
+          }
+        }
+        default combination;
+        description "Traffic selectors are used in pairs rather than in all combinations";
+      }
+      list local-ts {
+        key "id";
+        description "Local traffic selectors";
+        leaf id {
+          type uint32 {
+            range "1..65535";
+          }
+          description "Identifier and order for this selector (lower numbers processed first)(1-65535)";
+        }
+        leaf address {
+          type string {
+            pattern '(((((0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\.){3}(0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5])))/(0|([1-9]|[12][0-9]|3[0-2])))|(((:|[0-9a-f]{1,4}):([0-9a-f]{0,4}:){0,6}(:|[0-9a-f]{1,4})|::)/(0|([1-9][0-9]?|1[01][0-9]|12[0-8]))))';
+          }
+          description "IP Address (mask not optional)";
+        }
+      }
+      list remote-ts {
+        key "id";
+        description "Remote traffic selectors";
+        leaf id {
+          type uint32 {
+            range "1..65535";
+          }
+          description "Identifier and order for this selector (lower numbers processed first)(1-65535)";
+        }
+        leaf address {
+          type string {
+            pattern '(((((0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\.){3}(0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5])))/(0|([1-9]|[12][0-9]|3[0-2])))|(((:|[0-9a-f]{1,4}):([0-9a-f]{0,4}:){0,6}(:|[0-9a-f]{1,4})|::)/(0|([1-9][0-9]?|1[01][0-9]|12[0-8]))))';
+          }
+          description "IP Address (mask not optional)";
+        }
+      }
+      leaf local-id {
+        type uint32 {
+          range "1..2147483647";
+        }
+        description "Local identifier (1-2147483647)";
+      }
+      leaf remote-id {
+        type uint32 {
+          range "1..2147483647";
+        }
+        description "Remote identifier (1-2147483647)";
+      }
+      leaf vlan-tag {
+        type uint32 {
+          range "1..4094";
+        }
+        description "Default VID if not supplied by Radius (1-4094)";
+      }
+      leaf encapsulation {
+        type enumeration {
+          enum none {
+            value 0;
+            description "Tunnel encapsulation is unset";
+          }
+          enum ppp {
+            value 1;
+            description "Point-to-point protocol (L2TPv2 and Ethernet only)";
+          }
+          enum ethernet {
+            value 2;
+            description "Ethernet encapsulation (L2TPv3 only)";
+          }
+        }
+        default none;
+        description "Encapsulation for L2 tunnel types";
+      }
+      leaf listen-port {
+        type int32 {
+          range "1..65535";
+        }
+        default 1194;
+        description "OpenVPN listen port (1-65535)";
+      }
+      leaf protection-type {
+        type enumeration {
+          enum none {
+            value 0;
+            description "Tunnel protection is unset";
+          }
+          enum ipsec {
+            value 1;
+            description "IPsec protection (ipsec, gre, ipv6 and l2tpv3 only)";
+          }
+        }
+        default none;
+        description "Protection for tunnels";
+      }
+      leaf protection-profile {
+        type string;
+        description "Name of protection profile to use";
+      }
+      leaf openvpn-cipher {
+        type enumeration {
+          enum 'AES-128-CBC' {
+            description "AES-128-CBC";
+          }
+          enum 'AES-256-CBC' {
+            description "AES-256-CBC";
+          }
+          enum 'AES-128-GCM' {
+            description "AES-128-GCM";
+          }
+          enum 'AES-256-GCM' {
+            description "AES-256-GCM";
+          }
+        }
+        description "Name of data channel cipher to use for OpenVPN";
+      }
+      leaf openvpn-auth {
+        type enumeration {
+          enum SHA1 {
+            description 'SHA1';
+          }
+          enum SHA256 {
+            description 'SHA256';
+          }
+        }
+        default 'SHA1';
+        description "Name of data channel authentication digest to use for OpenVPN";
+      }
+      leaf openvpn-expiry-seconds {
+        type uint32 {
+          range "0|300..31449600";
+        }
+        default 3600;
+        description "Duration (seconds) before OpenVPN sessions will renegotiate. 0 means don't renegotiate (0|300-31449600)";
+      }
+      leaf openvpn-expiry-kbytes {
+        type uint32 {
+          range "0|10..2147483";
+        }
+        default 0;
+        description "Duration (Kbytes) before OpenVPN sessions will renegotiate. 0 means don't renegotiate (0|10-2147483)";
+      }
+      leaf openvpn-tls-version-min {
+        type string {
+          pattern '(1.(0|1|2|3))';
+        }
+        default "1.0";
+        description "Minimum TLS version for OpenVPN sessions";
+      }
+      leaf openvpn-tls-crypt {
+        type string {
+          pattern '.*';
+        }
+        description "OpenVPN TLS Crypt key file";
+      }
+      leaf openvpn-ifconfig-pool {
+        type string {
+          pattern '((((0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\.){3}(0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5]))) (((0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\.){3}(0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5]))) (((0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\.){3}(0|([1-9][0-9]?|1[0-9]{2}|2[0-4][0-9]|25[0-5]))))';
+        }
+        description "Dynamically allocated IP address to be pushed to the client. Format: low-IP high-IP mask. Example: 192.0.2.160 192.0.2.170 255.255.255.0";
+      }
+      leaf openvpn-ipv6-pool {
+        type string {
+          pattern '((:|[0-9a-f]{1,4}):([0-9a-f]{0,4}:){0,6}(:|[0-9a-f]{1,4})|::)/(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-4]) ((:|[0-9a-f]{1,4}):([0-9a-f]{0,4}:){0,6}(:|[0-9a-f]{1,4})|::)';
+        }
+        description "Dynamically allocated IPv6 address to be pushed to the client. Format: base-ip/mask local-ip. Example: 2001:1::10/64 2001:1::1";
+      }
+      leaf openvpn-verbosity {
+        type uint32 {
+          range "0..11";
+        }
+        default 1;
+        description "Verbosity of openVPN logging.
+                    0       -- No output except fatal errors.
+                    1 to 4  -- Normal usage range.
+                    5       -- Output R and W characters to the console for each packet read and write, uppercase is used for TCP/UDP packets and lowercase is used for TUN/TAP packets.
+                    6 to 11 -- Debug info range (see errlevel.h for additional information on debug levels).";
+      }
+      leaf openvpn-verify-client-cert-trustpoint {
+        type string;
+        description "Require OpenVPN clients to provide a valid certificate that will be checked against the server certificates in the specified trustpoint";
+      }
+      leaf openvpn-verify-client-cert-strict-cn-check {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable strict CN check";
+          }
+          enum enable {
+            value 1;
+            description "Enable strict CN check";
+          }
+        }
+        default enable;
+        description "Check that the certificate CN matches the username";
+      }
+      leaf openvpn-routes {
+        type string {
+          pattern '([a-zA-Z0-9_\-]{1,64}(\.[a-zA-Z0-9_\-]{1,64}(\.[a-zA-Z0-9_\-]{1,64})?)?)';
+        }
+        description "Entity containing subnets that should be routed to this device";
+      }
+      container provisioning {
+        description "Tunnel provisioning";
+        leaf upstream-interface {
+          type string;
+          description "Upstream interface to monitor for address changes";
+        }
+        list providers {
+          key "provider";
+          description "List of providers";
+          leaf provider {
+            type string;
+            description "Configuration provider index";
+          }
+          leaf url {
+            type string;
+            description "Configuration provider URL";
+          }
+          leaf username {
+            type string;
+            description "Username for this provider URL";
+          }
+          leaf password {
+            type string;
+            description "Password for this provider URL";
+          }
+        }
+      }
+      leaf softwire {
+        type string;
+        description "Name of Softwire Configuration to use";
+      }
+      leaf softwire-dad-disable {
+        type enumeration {
+          enum enable-dad {
+            value 0;
+            description "Enable DAD";
+          }
+          enum disable-dad {
+            value 1;
+            description "Disable DAD";
+          }
+        }
+        description "Disable DAD on the interface the Softwire source address is installed to";
+      }
+      leaf endpoint-dynamic {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable dynamic tunnel endpoint learning";
+          }
+          enum enable {
+            value 1;
+            description "Enable dynamic tunnel endpoint learning";
+          }
+        }
+        default disable;
+        description "Whether or not to dynamically learn the tunnel remote endpoints";
+      }
+      list endpoint {
+        key "address";
+        description "Multipoint tunnel remote endpoints";
+        leaf address {
+          type string;
+          description "Tunnel remote endpoint address or hostname";
+        }
+        leaf address-ip {
+          type string;
+          config false;
+          description "Tunnel remote endpoint in-use address when the hostname is specified";
+        }
+        leaf owner {
+          type enumeration {
+            enum user {
+              description 'user';
+            }
+            enum isakmp {
+              description 'isakmp';
+            }
+          }
+          default 'user';
+          description "Who configured this tunnel remote endpoint";
+        }
+      }
+      leaf mapping-4to6 {
+        type string;
+        description "Name of IPv4 to IPv6 Mappings to use";
+      }
+      leaf oper-status-control {
+        type enumeration {
+          enum none {
+            value 0;
+            description "Always running";
+          }
+          enum ipsec {
+            value 1;
+            description "Reflects IPsec protection state (only running when protected)";
+          }
+        }
+        default none;
+        description "Management of the interface oper-status";
+      }
+      leaf protection-state {
+        type enumeration {
+          enum unprotected {
+            value 0;
+            description "No IPsec SA exists";
+          }
+          enum protected {
+            value 1;
+            description "An IPsec SA exists";
+          }
+        }
+        default unprotected;
+        config false;
+        description "IPsec protection state";
+      }
+      leaf inline-processing {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable tunnel inline";
+          }
+          enum enable {
+            value 1;
+            description "Enable tunnel inline";
+          }
+        }
+        default disable;
+        description "Enable tunnel processing in tunneld";
+      }
+    }
+    container state {
+      config false;
+      description "Tunnel state information";
+      list vti {
+        key "name";
+        description "List of Virtual Tunnel Interfaces";
+        leaf name {
+          type string {
+            pattern "tunnel([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])";
+          }
+          description "Name of the tunnel (tunnel[0-65535])";
+        }
+        list users {
+          key "name";
+          description "List of users";
+          leaf name {
+            type string;
+            description "Username";
+          }
+          leaf last-connection {
+            type string;
+            description "Last successful connection time in ISO-8601 format";
+          }
+        }
+      }
+    }
+  }
+}

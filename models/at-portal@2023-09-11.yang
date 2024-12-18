@@ -1,0 +1,241 @@
+module at-portal {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-portal";
+  prefix at-portal;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for the Download Portal API";
+
+  revision 2023-09-11 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  typedef group-name {
+    type string {
+      pattern "([0-9A-Za-z._-]){1,128}";
+    }
+    description "Group name string";
+  }
+
+  typedef uri {
+    type string {
+      pattern ".{1,400}";
+    }
+    description "URI string";
+  }
+
+  typedef https-scheme {
+    type string {
+      pattern "https";
+    }
+    description "https only";
+  }
+
+  container download-portal {
+    description "Data model for the Download Portal";
+    container settings {
+      description "Configuration of Download Portal";
+
+      list listen-addresses {
+        key "index";
+        description "Download Portal HTTPS listen addreses";
+
+        leaf index {
+          type uint64;
+          mandatory true;
+          description "Listen address index";
+        }
+        leaf address {
+          type string;
+          mandatory true;
+          description "IP address to listen on";
+        }
+        leaf port {
+          type uint16 {
+            range "1..65535";
+          }
+          mandatory true;
+          description "Port to listen on";
+        }
+        leaf scheme {
+          type https-scheme;
+          default "https";
+          description "Whether to use HTTPS or not - use https or don't set";
+        }
+      }
+      leaf enable {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable Download Portal";
+          }
+          enum enable {
+            value 1;
+            description "Enable Download Portal";
+          }
+        }
+        default disable;
+        description "Enable Download Portal";
+      }
+
+      container groups {
+        description "Download Portal groups";
+
+        list group {
+          key "name";
+          description "Download Portal group";
+
+          leaf name {
+            type group-name;
+            mandatory true;
+            description "Download Portal group name. This must be 'default'.";
+          }
+
+          container files {
+            description "Download Portal group files";
+
+            list file {
+              key "id";
+              description "Download Portal group file";
+
+              leaf id {
+                type uint64;
+                mandatory true;
+                description "Download Portal file ID";
+              }
+
+              leaf uri {
+                type uri;
+                mandatory true;
+                description "Download Portal file location";
+              }
+
+              leaf description {
+                type string {
+                  pattern ".{1,400}";
+                }
+                description "Download Portal file description";
+              }
+
+              leaf digest {
+                type string;
+                description "Download Portal file sha256 digest";
+              }
+            } // End of list file
+          } // End of container files
+        } // End of list group
+      } // End of container groups
+    } // End of container settings
+
+    container state {
+      config false;
+      description "State of Download Portal";
+
+      leaf enable {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Download Portal is disabled";
+          }
+          enum enable {
+            value 1;
+            description "Download Portal is enabled";
+          }
+        }
+        default disable;
+        description "State of Enable Download Portal";
+      }
+
+      container groups {
+        description "State of Download Portal groups";
+
+        list group {
+          key "name";
+          description "State of Download Portal group";
+
+          leaf name {
+            type group-name;
+            mandatory true;
+            description "State of Download Portal group name";
+          }
+
+          container files {
+            description "State of Download Portal group files";
+
+            list file {
+              key "id";
+              description "State of Download Portal group file";
+
+              leaf id {
+                type uint64;
+                mandatory true;
+                description "Download Portal file ID";
+              }
+
+              leaf uri {
+                type uri;
+                mandatory true;
+                description "Download Portal file location";
+              }
+
+              leaf description {
+                type string;
+                description "Download Portal file description";
+              }
+
+              leaf digest {
+                type string;
+                description "Download Portal file sha256 digest";
+              }
+
+              leaf timestamp {
+                type yang:date-and-time;
+                description "Download Portal file ISO8601 timestamp";
+              }
+
+              leaf size {
+                type uint64;
+                description "Download Portal file size in bytes";
+              }
+
+              leaf status {
+                type enumeration {
+                  enum ok {
+                    value 0;
+                    description "Download Portal file is ok";
+                  }
+                  enum error {
+                    value 1;
+                    description "Download Portal file is invalid";
+                  }
+                  enum unknown {
+                    value 2;
+                    description "Download Portal file is in portal but not configured";
+                  }
+                }
+                default ok;
+                description "Download Portal file status";
+              }
+            } // End of list file
+          } // End of container files
+        } // End of list group
+      } // End of container groups
+    } // End of container state
+  } // End of container customer-portal
+} // End of module customer-portal

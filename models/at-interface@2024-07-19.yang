@@ -1,0 +1,1200 @@
+module at-interface {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-interface";
+  prefix at-if;
+
+  import iana-if-type { prefix ianaift; }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for Allied Telesis interfaces";
+
+  revision 2024-07-19 {
+    description
+      "Remove the hard-coded identityref base type.";
+  }
+
+  revision 2024-03-13 {
+    description
+      "Add leaf 'hardware-port'.";
+  }
+
+  revision 2024-01-30 {
+    description
+      "Add variables (mainly counters) to support the ietf-interfaces and
+       openconfig-interface data models.";
+  }
+
+  revision 2019-12-01 {
+    description
+      "Initial revision. This revision is for INTERNAL use only.";
+    reference "RFC 6020: A Data Modeling Language for the Network Configuration Protocol (NETCONF) RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  feature vrf {
+    description
+      "Enables vrf support.";
+  }
+
+  typedef interface-ref {
+    type leafref {
+      path "/interface/interfaces/name";
+    }
+    description
+      "This type is used by data models that need to reference
+       interfaces.";
+  }
+
+  typedef date-and-time {
+    type string {
+      pattern '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?'
+            + '(Z|[\+\-]\d{2}:\d{2})';
+    }
+    description
+     "The date-and-time type is a profile of the ISO 8601
+      standard for representation of dates and times using the
+      Gregorian calendar.  The profile is defined by the
+      date-time production in Section 5.6 of RFC 3339.
+
+      The date-and-time type is compatible with the dateTime XML
+      schema type with the following notable exceptions:
+
+      (a) The date-and-time type does not allow negative years.
+
+      (b) The date-and-time time-offset -00:00 indicates an unknown
+          time zone (see RFC 3339) while -00:00 and +00:00 and Z
+          all represent the same time zone in dateTime.
+
+      (c) The canonical format (see below) of data-and-time values
+          differs from the canonical format used by the dateTime XML
+          schema type, which requires all times to be in UTC using
+          the time-offset 'Z'.
+
+      This type is not equivalent to the DateAndTime textual
+      convention of the SMIv2 since RFC 3339 uses a different
+      separator between full-date and full-time and provides
+      higher resolution of time-secfrac.
+
+      The canonical format for date-and-time values with a known time
+      zone uses a numeric time zone offset that is calculated using
+      the device's configured known offset to UTC time.  A change of
+      the device's offset to UTC time will cause date-and-time values
+      to change accordingly.  Such changes might happen periodically
+      in case a server follows automatically daylight saving time
+      (DST) time zone offset changes.  The canonical format for
+      date-and-time values with an unknown time zone (usually
+      referring to the notion of local time) uses the time-offset
+      -00:00.";
+    reference
+     "RFC 3339: Date and Time on the Internet: Timestamps
+      RFC 2579: Textual Conventions for SMIv2
+      XSD-TYPES: XML Schema Part 2: Datatypes Second Edition";
+  }
+
+  container interface {
+    description
+        "Interface parameters";
+    leaf-list if-alias {
+      type string;
+      config false;
+      description
+        "Interface index to name";
+    }
+    list interfaces {
+      key "name";
+      description
+        "Interface List";
+      leaf name {
+        type string;
+        description
+          "Interface name";
+      }
+      leaf if-index {
+        type string;
+        config false;
+        description
+          "Interface Index";
+      }
+
+      container status {
+        config false;
+        description
+          "Interface status";
+
+        leaf type {
+          type identityref {
+            base ianaift:iana-interface-type;
+          }
+          config false;
+          mandatory true;
+          description
+            "The type of the interface.
+
+            When an interface entry is created, a server MAY
+            initialize the type leaf with a valid value, e.g., if it
+            is possible to derive the type from the name of the
+            interface.
+
+            If a client tries to set the type of an interface to a
+            value that can never be used by the system, e.g., if the
+            type is not supported or if the type does not match the
+            name of the interface, the server MUST reject the request.
+            A NETCONF server MUST reply with an rpc-error with the
+            error-tag 'invalid-value' in this case.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifType";
+        }
+        leaf description {
+          type string;
+          config false;
+          description
+            "A textual description of the interface.
+
+            A server implementation MAY map this leaf to the ifAlias
+            MIB object.  Such an implementation needs to use some
+            mechanism to handle the differences in size and characters
+            allowed between this leaf and ifAlias.  The definition of
+            such a mechanism is outside the scope of this document.
+
+            Since ifAlias is defined to be stored in non-volatile
+            storage, the MIB implementation MUST map ifAlias to the
+            value of 'description' in the persistently stored
+            datastore.
+
+            Specifically, if the device supports ':startup', when
+            ifAlias is read the device MUST return the value of
+            'description' in the 'startup' datastore, and when it is
+            written, it MUST be written to the 'running' and 'startup'
+            datastores.  Note that it is up to the implementation to
+
+            decide whether to modify this single leaf in 'startup' or
+            perform an implicit copy-config from 'running' to
+            'startup'.
+
+            If the device does not support ':startup', ifAlias MUST
+            be mapped to the 'description' leaf in the 'running'
+            datastore.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifAlias";
+        }
+        leaf admin-status {
+          type enumeration {
+            enum "admin-down" {
+              value 0;
+              description
+                "admin-down";
+            }
+            enum "admin-up" {
+              value 1;
+              description
+                "admin-up";
+            }
+          }
+          config false;
+          description
+            "Admin Status";
+        }
+        leaf oper-status {
+          type string;
+          config false;
+          description
+            "Operation State, refer: kernel documentation";
+        }
+        leaf flags {
+          type string;
+          config false;
+          description
+            "Interface state flags, refer: kernel documentation";
+        }
+        leaf last-change {
+          type uint64;
+          config false;
+          description
+            "This timestamp indicates the absolute time of the last
+            state change of the interface (e.g., up-to-down transition).
+            This is different than the SNMP ifLastChange object in the
+            standard interface MIB in that it is not relative to the
+            system boot time (i.e,. sysUpTime).
+
+            The value is the timestamp in nanoseconds relative to
+            the Unix Epoch (Jan 1, 1970 00:00:00 UTC).";
+        }
+        leaf phys-address {
+          type string;
+          config false;
+          description
+            "Physical (MAC) Address";
+        }
+        leaf-list higher-layer-if {
+          type interface-ref;
+          config false;
+          description
+            "A list of references to interfaces layered on top of this
+             interface.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifStackTable";
+        }
+        leaf-list lower-layer-if {
+          type interface-ref;
+          config false;
+
+          description
+            "A list of references to interfaces layered underneath this
+             interface.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifStackTable";
+        }
+        leaf promisc {
+          type enumeration {
+            enum "promisc-off" {
+              value 0;
+              description
+                "promisc-off";
+            }
+            enum "promisc-on" {
+              value 1;
+              description
+                "promisc-on";
+            }
+          }
+          config false;
+          description
+            "Promiscuous mode";
+        }
+        leaf qdisc {
+          type string;
+          config false;
+          description
+            "Traffic Queuing Discipline";
+        }
+        leaf mtu {
+          type string;
+          config false;
+          description
+            "Maximum Transmission Unit. The current actual value of the
+            MTU for this interface. This may vary from the configured
+            value due to system limitations. See the description of
+            mtu in the settings container.";
+        }
+        leaf speed {
+          type string;
+          config false;
+          description
+            "Current interface speed (Mb/s)";
+        }
+        leaf max-speed {
+          type string;
+          config false;
+          description
+            "Maximum possible interface speed (Mb/s)";
+        }
+        leaf master-ifindex {
+          type string;
+          config false;
+          description
+            " Parent bridge ifindex";
+        }
+        leaf duplex {
+          type enumeration {
+            enum "Auto" {
+              value 0;
+              description
+                "Auto Duplex";
+            }
+            enum "Full" {
+              value 1;
+              description
+                "Full Duplex";
+            }
+            enum "Half" {
+              value 2;
+              description
+                "Half Duplex";
+            }
+          }
+          config false;
+          description
+            "Current Duplex Mode";
+        }
+        leaf polarity {
+          type enumeration {
+            enum "Auto" {
+              value 0;
+              description
+                "Auto";
+            }
+            enum "MDI" {
+              value 1;
+              description
+                "MDI";
+            }
+            enum "MDI-X" {
+              value 2;
+              description
+                "MDI-X";
+            }
+          }
+          config false;
+          description
+            "Current MDI/-X Mode";
+        }
+        leaf mru {
+          type string;
+          config false;
+          description
+            "Maximum Receive Units (68-16535 octets)";
+        }
+        leaf arptype {
+          type string;
+          config false;
+          description
+            "ARP Hardware Type. 1 = ethernet";
+        }
+        leaf rxq {
+          type string;
+          config false;
+          description
+            "How many receive queues exist";
+        }
+        leaf txqlen {
+          type string;
+          config false;
+          description
+            "Maximum transmit queue length";
+        }
+        leaf txq {
+          type string;
+          config false;
+          description
+            "How many transmit queues exist";
+        }
+        leaf hardware-port {
+          type string;
+          config false;
+          description
+            "For non-channelized interfaces, references the hardware port
+            corresponding to the base interface.";
+        }
+        container ipv4 {
+          description
+            "IPv4";
+          list addresses {
+            key "ip";
+            description
+              "IPv4 addresses";
+            leaf ip {
+              type string;
+              config false;
+              description
+                "IPv4 Address";
+            }
+            leaf mask {
+              type string;
+              config false;
+              description
+                "Subnet Mask  (0-32)";
+            }
+            leaf scope {
+              type enumeration {
+                enum "Universe" {
+                  value 0;
+                  description
+                    "Global address";
+                }
+                enum "Site" {
+                  value 200;
+                  description
+                    "Site-only access";
+                }
+                enum "Link" {
+                  value 253;
+                  description
+                    "On-Link-only access";
+                }
+                enum "Host" {
+                  value 254;
+                  description
+                    "Host-only access";
+                }
+                enum "Nowhere" {
+                  value 255;
+                  description
+                    "Non-existant destination";
+                }
+              }
+              config false;
+              description
+                "Address scope";
+            }
+            leaf flags {
+              type int32;
+              default "0";
+              config false;
+              description
+                "Address flags (kernel: IFA_ADDRESS)";
+            }
+            leaf secondary {
+              type enumeration {
+                enum "secondary" {
+                  value 1;
+                  description
+                    "This is a secondary IP Address";
+                }
+                enum "not" {
+                  value 0;
+                  description
+                    "This is NOT a secondary IP Address";
+                }
+              }
+              default "not";
+              config false;
+              description
+                "Secondary IP address";
+            }
+            leaf remote {
+              type string;
+              config false;
+              description
+                "If not set, this will be 0.0.0.0. Otherwise, if this is a point-to-point interface
+                 then this is the remote IPv4 Address, otherwise it is the broadcast IPv4 address";
+            }
+            leaf type {
+              type enumeration {
+                enum "standard" {
+                  description
+                    "This is a standard (broadcast) type IPv4 Address";
+                }
+                enum "point-to-point" {
+                  description
+                    "This is a point-to-point type IPv4 Address";
+                }
+              }
+              default "standard";
+              config false;
+              description
+                "IPv4 address type";
+            }
+          }
+          list neighbours {
+            key "ip";
+            description
+              "IPv4 neighbors";
+            leaf ip {
+              type string;
+              config false;
+              description
+                "Neighbor's IP Address";
+            }
+            leaf phys-address {
+              type string;
+              config false;
+              description
+                "Neighbor's physical address (MAC, IPv4 or IPv6 )";
+            }
+            leaf l2-ifindex {
+              type string;
+              config false;
+              description
+                "Neighbor's switchport";
+            }
+            leaf state {
+              type uint8;
+              config false;
+              description
+                "Neighbor's state bitmap. Values in the bitmap are as follows:
+                 1 - incomplete - A currently resolving cache entry
+                 2 - reachable - A confirmed working cache entry
+                 4 - stale - An expired cache entry
+                 8 - delay - An entry waiting for a timer
+                 16 - probe - A cache entry that is currently reprobed
+                 32 - failed - An invalid cache entry
+                 64 - noarp - A device with no destination cache
+                 128 - permanent - A static entry";
+            }
+          }
+        }
+        container ipv6 {
+          description
+            "IPv6";
+          list addresses {
+            key "ip";
+            description
+              "IPv6 addresses";
+            leaf ip {
+              type string;
+              config false;
+              description
+                "IPv6 Address";
+            }
+            leaf mask {
+              type string;
+              config false;
+              description
+                "Subnet Mask (0-128)";
+            }
+            leaf scope {
+              type enumeration {
+                enum "Universe" {
+                  value 0;
+                  description
+                    "Global address";
+                }
+                enum "Site" {
+                  value 200;
+                  description
+                    "Site-only access";
+                }
+                enum "Link" {
+                  value 253;
+                  description
+                    "On-Link-only access";
+                }
+                enum "Host" {
+                  value 254;
+                  description
+                    "Host-only access";
+                }
+                enum "Nowhere" {
+                  value 255;
+                  description
+                    "Non-existant destination";
+                }
+              }
+              config false;
+              description
+                "Address scope";
+            }
+            leaf flags {
+              type int32;
+              default "0";
+              config false;
+              description
+                "Address flags (kernel: IFA_ADDRESS)";
+            }
+            leaf remote {
+              type string;
+              config false;
+              description
+                "If set, for a point-to-point interface this is the remote IPv6 Address";
+            }
+            leaf type {
+              type enumeration {
+                enum "standard" {
+                  description
+                    "This is a standard type IPv6 Address";
+                }
+                enum "point-to-point" {
+                  description
+                    "This is a point-to-point type IPv6 Address";
+                }
+              }
+              default "standard";
+              config false;
+              description
+                "IPv6 address type";
+            }
+          }
+          list neighbours {
+            key "ip";
+            description
+              "IPv6 neighbors";
+            leaf ip {
+              type string;
+              config false;
+              description
+                "Neighbor's IPv6 Address";
+            }
+            leaf phys-address {
+              type string;
+              config false;
+              description
+                "Neighbor's physical address (MAC, IPv4 or IPv6)";
+            }
+          }
+        }
+      }
+      container settings {
+        description
+          "Interface Settings";
+
+        leaf description {
+          type string;
+          description
+            "A textual description of the interface.
+
+            A server implementation MAY map this leaf to the ifAlias
+            MIB object.  Such an implementation needs to use some
+            mechanism to handle the differences in size and characters
+            allowed between this leaf and ifAlias.  The definition of
+            such a mechanism is outside the scope of this document.
+
+            Since ifAlias is defined to be stored in non-volatile
+            storage, the MIB implementation MUST map ifAlias to the
+            value of 'description' in the persistently stored
+            datastore.
+
+            Specifically, if the device supports ':startup', when
+            ifAlias is read the device MUST return the value of
+            'description' in the 'startup' datastore, and when it is
+            written, it MUST be written to the 'running' and 'startup'
+            datastores.  Note that it is up to the implementation to
+
+            decide whether to modify this single leaf in 'startup' or
+            perform an implicit copy-config from 'running' to
+            'startup'.
+
+            If the device does not support ':startup', ifAlias MUST
+            be mapped to the 'description' leaf in the 'running'
+            datastore.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifAlias";
+        }
+        leaf link-up-down-trap-enable {
+          type enumeration {
+            enum enabled {
+              value 1;
+              description
+                "The device will generate linkUp/linkDown SNMP
+                 notifications for this interface.";
+            }
+            enum disabled {
+              value 2;
+              description
+                "The device will not generate linkUp/linkDown SNMP
+                 notifications for this interface.";
+            }
+            enum enterprise {
+              value 3;
+              description
+                "Generate linkUp/linkDown SNMP notifications, but use
+                 an enterprise encoding.";
+            }
+          }
+          default "disabled";
+          description
+            "Controls whether linkUp/linkDown SNMP notifications
+             should be generated for this interface.
+
+             If this node is not configured, the value 'enabled' is
+             operationally used by the server for interfaces that do
+             not operate on top of any other interface (i.e., there are
+             no 'lower-layer-if' entries), and 'disabled' otherwise.";
+          reference
+            "RFC 2863: The Interfaces Group MIB -
+                       ifLinkUpDownTrapEnable";
+        }
+        leaf admin-status {
+          type enumeration {
+            enum "admin-down" {
+              value 0;
+              description
+                "admin-down";
+            }
+            enum "admin-up" {
+              value 1;
+              description
+                "admin-up";
+            }
+          }
+          default "admin-up";
+          description
+            "Configured admin status of the port. Refer to status/admin-status for applied value";
+        }
+        leaf mtu {
+          type uint32;
+          description
+            "Set the max transmission unit size in octets
+            for the physical interface.  If this is not set, the mtu is
+            set to the operational default -- e.g., 1514 bytes on an
+            Ethernet interface. It is possible to set this to a value
+            that is not configurable (for example, hardware/driver does
+            not support the requested MTU). The actual value of MTU for
+            this interface can be found under 'status/mtu'.";
+        }
+        leaf vrf {
+          if-feature vrf;
+          type string;
+          config false;
+          description
+            "VRF-ID for the interface";
+        }
+        leaf master-ifname {
+          type string;
+          description
+            "Parent bridge ifname";
+        }
+      }
+
+      container counters {
+        config false;
+        description
+          "A collection of interface-related statistics objects. If a counter is not
+           supported on a given interface or device, the counter will not be present.";
+
+        leaf discontinuity-time {
+          type date-and-time;
+          config false;
+          description
+            "The time on the most recent occasion at which any one or
+             more of this interface's counters suffered a
+             discontinuity.  If no such discontinuities have occurred
+             since the last re-initialization of the local management
+             subsystem, then this node contains the time the local
+             management subsystem re-initialized itself.";
+        }
+
+        leaf in-octets {
+          type uint64;
+          description
+            "The total number of octets received on the interface,
+            including framing characters.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifHCInOctets";
+        }
+
+        leaf in-pkts {
+          type uint64;
+          description
+            "The total number of packets received on the interface,
+            including all unicast, multicast, broadcast and bad packets
+            etc.";
+          reference
+            "RFC 2819: Remote Network Monitoring Management Information
+            Base";
+        }
+
+        leaf in-unicast-pkts {
+          type uint64;
+          description
+            "The number of packets, delivered by this sub-layer to a
+            higher (sub-)layer, that were not addressed to a
+            multicast or broadcast address at this sub-layer.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifHCInUcastPkts";
+        }
+
+        leaf in-broadcast-pkts {
+          type uint64;
+          description
+            "The number of packets, delivered by this sub-layer to a
+            higher (sub-)layer, that were addressed to a broadcast
+            address at this sub-layer.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB -
+                       ifHCInBroadcastPkts";
+        }
+
+        leaf in-multicast-pkts {
+          type uint64;
+          description
+            "The number of packets, delivered by this sub-layer to a
+            higher (sub-)layer, that were addressed to a multicast
+            address at this sub-layer.  For a MAC-layer protocol,
+            this includes both Group and Functional addresses.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB -
+                       ifHCInMulticastPkts";
+        }
+
+        leaf in-discards {
+          type uint64;
+          description
+            "The number of inbound packets that were chosen to be
+            discarded even though no errors had been detected to
+            prevent their being deliverable to a higher-layer
+            protocol.  One possible reason for discarding such a
+            packet could be to free up buffer space.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+
+
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifInDiscards";
+        }
+
+        leaf in-errors {
+          type uint64;
+          description
+            "For packet-oriented interfaces, the number of inbound
+            packets that contained errors preventing them from being
+            deliverable to a higher-layer protocol.  For character-
+            oriented or fixed-length interfaces, the number of
+            inbound transmission units that contained errors
+            preventing them from being deliverable to a higher-layer
+            protocol.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifInErrors";
+        }
+
+        leaf in-unknown-protos {
+          type uint64;
+          description
+            "For packet-oriented interfaces, the number of packets
+            received via the interface that were discarded because
+            of an unknown or unsupported protocol.  For
+            character-oriented or fixed-length interfaces that
+            support protocol multiplexing, the number of
+            transmission units received via the interface that were
+            discarded because of an unknown or unsupported protocol.
+            For any interface that does not support protocol
+            multiplexing, this counter is not present.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifInUnknownProtos";
+        }
+
+        leaf in-fcs-errors {
+          type uint64;
+          description
+            "Number of received packets which had errors in the
+            frame check sequence (FCS), i.e., framing errors.
+
+            Discontinuities in the value of this counter can occur
+            when the device is re-initialization as indicated by the
+            value of 'last-clear'.";
+        }
+
+        leaf out-octets {
+          type uint64;
+          description
+            "The total number of octets transmitted out of the
+            interface, including framing characters.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifHCOutOctets";
+        }
+
+        leaf out-pkts {
+          type uint64;
+          description
+            "The total number of packets transmitted out of the
+            interface, including all unicast, multicast, broadcast,
+            and bad packets etc.";
+          reference
+            "RFC 2819: Remote Network Monitoring Management Information
+            Base";
+        }
+
+        leaf out-unicast-pkts {
+          type uint64;
+          description
+            "The total number of packets that higher-level protocols
+            requested be transmitted, and that were not addressed
+            to a multicast or broadcast address at this sub-layer,
+            including those that were discarded or not sent.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifHCOutUcastPkts";
+        }
+
+        leaf out-broadcast-pkts {
+          type uint64;
+          description
+            "The total number of packets that higher-level protocols
+            requested be transmitted, and that were addressed to a
+            broadcast address at this sub-layer, including those
+            that were discarded or not sent.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB -
+                       ifHCOutBroadcastPkts";
+        }
+
+
+        leaf out-multicast-pkts {
+          type uint64;
+          description
+            "The total number of packets that higher-level protocols
+            requested be transmitted, and that were addressed to a
+            multicast address at this sub-layer, including those
+            that were discarded or not sent.  For a MAC-layer
+            protocol, this includes both Group and Functional
+            addresses.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB -
+                       ifHCOutMulticastPkts";
+        }
+
+        leaf out-discards {
+          type uint64;
+          description
+            "The number of outbound packets that were chosen to be
+            discarded even though no errors had been detected to
+            prevent their being transmitted.  One possible reason
+            for discarding such a packet could be to free up buffer
+            space.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifOutDiscards";
+        }
+
+        leaf out-errors {
+          type uint64;
+          description
+            "For packet-oriented interfaces, the number of outbound
+            packets that could not be transmitted because of errors.
+            For character-oriented or fixed-length interfaces, the
+            number of outbound transmission units that could not be
+            transmitted because of errors.
+
+            Discontinuities in the value of this counter can occur
+            at re-initialization of the management system, and at
+            other times as indicated by the value of
+            'last-clear'.";
+          reference
+            "RFC 2863: The Interfaces Group MIB - ifOutErrors";
+        }
+      }
+      container ethernet-counters {
+        config false;
+        description
+          "Ethernet interface statistics objects. A counter reading as 0
+           is either valid and reporting 0 of whatever it is counting, or is an
+           unsupported counter for the given device or interface type.";
+
+        leaf bad-octets-rx {
+          type uint64;
+          description
+            "Sum of lengths of all the bad Ethernet frames received.";
+        }
+        leaf pkts-64-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received between 0 and 64 bytes inclusive.";
+        }
+        leaf pkts-65-127-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received between 65 and 127 bytes inclusive.";
+        }
+        leaf pkts-128-255-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received between 128 and 255 bytes inclusive.";
+        }
+        leaf pkts-256-511-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received between 256 and 511 bytes inclusive.";
+        }
+        leaf pkts-512-1023-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received between 512 and 1023 bytes inclusive.";
+        }
+        leaf pkts-1024-max-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received bigger than 1023 bytes.";
+        }
+        leaf undersize-pkts-rx {
+          type uint64;
+          description
+            "Number of undersized packets received.";
+        }
+        leaf fragmented-pkts-rx {
+          type uint64;
+          description
+            "Number of fragments received.";
+        }
+        leaf oversize-pkts-rx {
+          type uint64;
+          description
+            "Number of oversized packets received";
+        }
+        leaf jabber-pkts-rx {
+          type uint64;
+          description
+            "Number of jabber packets received";
+        }
+        leaf collisions {
+          type uint64;
+          description
+            "Number of collisions";
+        }
+        leaf late-collisions {
+          type uint64;
+          description
+            "Number of late collisions.";
+        }
+        leaf mtu-exceeded {
+          type uint64;
+          description
+            "Number of frames for which the MTU size was exceeded.";
+        }
+        leaf drop-events {
+          type uint64;
+          description
+            "Number of times that the port is unable to receive packets due to insufficient bandwidth.";
+        }
+        leaf alignment-error-rx {
+          type uint64;
+          description
+            "Number of packets received that are not an integral number of octets in length and do not pass the FCS check. Not available on all platforms.";
+        }
+        leaf symbol-error-rx {
+          type uint64;
+          description
+            "Number of times there was an invalid symbol. Not available on all platforms.";
+        }
+        leaf mac-rx-error {
+          type uint64;
+          description
+            "Number of transmission error events seen by the receive side.";
+        }
+        leaf good-flow-control-rx {
+          type uint64;
+          description
+            "Number of good flow control frames received.";
+        }
+        leaf bad-flow-control-rx {
+          type uint64;
+          description
+            "Number of bad flow control frames received.";
+        }
+        leaf unrecognized-mac-control-rx {
+          type uint64;
+          description
+            "Number of received MAC control frames with an unrecognized opcode.";
+        }
+        leaf carrier-sense-error {
+          type uint64;
+          description
+            "Number of times there was a carrier sense error. Not available on all platforms.";
+        }
+        leaf flow-control-tx {
+          type uint64;
+          description
+            "Number of flow control frames sent.";
+        }
+        leaf single-collisions {
+          type uint64;
+          description
+            "Number of successfully transmitted frames for which transmission is inhibited by exactly one collision. Not available on all platforms.";
+        }
+        leaf excessive-collisions {
+          type uint64;
+          description
+            "Number of frames dropped in the transmit MAC due to excessive collisions.";
+        }
+        leaf transmit-deferral {
+          type uint64;
+          description
+            "Number of frames for which the first transmission attempt on a particular interface is delayed because the medium is busy. Not available on all platforms.";
+        }
+        leaf mac-tx-err {
+          type uint64;
+          description
+            "Number of frames not transmitted correctly or dropped due to internal MAC transmission error.";
+        }
+        leaf pkts-1519-2047-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received between 1519 and 2047 bytes inclusive.";
+        }
+        leaf pkts-2048-4095-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received between 2048 and 4095 bytes inclusive.";
+        }
+        leaf pkts-4096-9216-octets-rx {
+          type uint64;
+          description
+            "Number of good and bad packets received between 4096 and 9216 bytes inclusive.";
+        }
+        leaf pause-rcv {
+          type uint64;
+          description
+            "Number of flow control pause frames received.";
+        }
+        leaf pause-sent {
+          type uint64;
+          description
+            "Number of flow control pause frams sent.";
+        }
+      }
+      leaf l2 {
+        type enumeration {
+          enum "l2-if" {
+            value 1;
+            description
+              "This is a Layer 2 interface";
+          }
+        }
+        config false;
+        description
+          "1=This is a layer 2 interface";
+      }
+      leaf l3 {
+        type enumeration {
+          enum "l3-if" {
+            value 1;
+            description
+              "This is a Layer 3 interface";
+          }
+        }
+        config false;
+        description
+          "1=This is a layer 3 interface";
+      }
+    }
+  }
+}

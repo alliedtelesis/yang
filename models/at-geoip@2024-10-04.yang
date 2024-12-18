@@ -1,0 +1,37 @@
+module at-geoip {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-geoip";
+  prefix at-geoip;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description "This document defines a YANG module for
+    Allied Telesis GeoIP";
+
+  revision 2024-10-04 {
+    description "Initial revision.";
+    reference
+      "1.0.0
+
+       RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container geoip {
+    description "GeoIP parameters";
+    container settings {
+      description "GeoIP settings";
+      leaf update-interval {
+        description "Update interval for GeoIP resource";
+        type uint64;
+        default "0";
+      }
+    }
+  }
+}

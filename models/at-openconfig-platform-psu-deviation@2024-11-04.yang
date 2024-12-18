@@ -1,0 +1,46 @@
+module at-openconfig-platform-psu-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-openconfig-platform-psu-deviation";
+  prefix at-oc-plat-psu-dev;
+
+  import openconfig-platform {
+    prefix oc-platform;
+  }
+  import openconfig-platform-psu {
+    prefix oc-platform-psu;
+  }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the openconfig-platform-psu module.";
+
+  revision 2024-11-04 {
+    description
+      "Remove the default for 'state/enabled' and cleanup the deviation for 'config/enabled'";
+  }
+
+  revision 2024-02-26 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  deviation /oc-platform:components/oc-platform:component/oc-platform:power-supply/oc-platform:config/oc-platform-psu:enabled {
+    deviate not-supported;
+  }
+  deviation /oc-platform:components/oc-platform:component/oc-platform:power-supply/oc-platform:state/oc-platform-psu:capacity {
+    deviate not-supported;
+  }
+  deviation /oc-platform:components/oc-platform:component/oc-platform:power-supply/oc-platform:state/oc-platform-psu:enabled {
+    deviate delete {
+      default true;
+    }
+  }
+}

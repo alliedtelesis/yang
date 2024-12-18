@@ -1,0 +1,130 @@
+ module at-openconfig-openflow-ext {
+  yang-version "1";
+  namespace "http://alliedtelesis.com/ns/yang/at-openconfig-openflow-ext";
+  prefix "at-oc-of-ext";
+
+  import openconfig-system { prefix oc-sys; }
+  import openconfig-openflow { prefix oc-of; }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains extension statements for the openconfig-openflow module.";
+
+  revision 2024-09-12 {
+    description
+      "Add pattern for interface leaf-list.";
+  }
+  revision 2024-05-05 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  grouping at-oc-of-ext-agent-config {
+    description
+      "Extension variables for configurable parameters.";
+
+    leaf ssl-trustpoint {
+      description
+        "The name of an existing SSL trustpoint on this device. This will be used for all OpenFlow
+        controller connections (rather than a separate certificate ID being specified for each
+        controller.";
+      type string;
+    }
+
+    leaf ssl-peer-certificate {
+      description
+        "Describes the usage of peer certificates in SSL authentication. Can be the string 'bootstrap'
+        if we are emplying bootstrap mode, the string 'none' if there is no peer certificate checking
+        required or the name of a file that contains the peer certificate.";
+      type string;
+      default "none";
+    }
+
+    leaf protocol-10-enabled {
+      description
+        "Whether OpenFlow protocol version 1.0 is enabled";
+      type boolean;
+      default false;
+    }
+
+    leaf protocol-13-enabled {
+      description
+        "Whether OpenFlow protocol version 1.3 is enabled";
+      type boolean;
+      default true;
+    }
+
+    leaf native-vlan-internal {
+      description
+        "VLAN ID reserved for internal use in setting packets to be untagged.
+        This VLAN should not be used for other purposes.";
+      type uint16 {
+        range "1..4090";
+      }
+      default 1;
+    }
+
+    container interfaces {
+      leaf-list interface {
+        description
+          "List of OpenFlow interfaces. Each one is either a portX.Y.Z or an saN.";
+        type string {
+          pattern "(port[0-9]+\.[0-9]+\.[0-9]+)|(sa[0-9]+)";
+        }
+      }
+    }
+  }
+
+  grouping at-oc-of-ext-agent-state {
+
+  }
+
+  augment "/oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:config" {
+    description
+      "Adding variables to OpenFlow agent configuration.";
+    uses at-oc-of-ext-agent-config;
+  }
+
+  augment "/oc-sys:system/oc-of:openflow/oc-of:agent/oc-of:state" {
+    description
+      "Adding variables to OpenFlow agent state.";
+    uses at-oc-of-ext-agent-config;
+    uses at-oc-of-ext-agent-state;
+  }
+
+  grouping at-oc-of-ext-connection-config {
+    description
+      "Extensions for connection configuration.";
+    leaf in-band {
+      description
+        "Whether the controller connection is in-band or out of band.";
+      type boolean;
+      default false;
+    }
+  }
+
+  grouping at-oc-of-ext-connection-state {
+
+  }
+
+  augment "/oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:config" {
+    description
+      "Adding variables to OpenFlow connection config.";
+    uses at-oc-of-ext-connection-config;
+  }
+
+  augment "/oc-sys:system/oc-of:openflow/oc-of:controllers/oc-of:controller/oc-of:connections/oc-of:connection/oc-of:state" {
+    description
+      "Adding variables to OpenFlow connection config.";
+    uses at-oc-of-ext-connection-config;
+    uses at-oc-of-ext-connection-state;
+  }
+}

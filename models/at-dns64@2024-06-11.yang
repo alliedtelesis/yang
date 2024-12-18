@@ -1,0 +1,53 @@
+module at-dns64 {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-dns64";
+  prefix at-dns64;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for
+    Allied Telesis DNS64";
+
+  revision 2024-06-11 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container dns64 {
+    description "DNS64 configuration and state";
+    container settings {
+      description "DNS64 configuration";
+
+      container mapping-instances {
+        description "List of instances";
+
+        list mapping-instance {
+          key "name";
+          description "4to6 mapping instance that configured IPv6 originator and responder subnets";
+
+          leaf name {
+            type string {
+              pattern "^([a-zA-Z0-9]+)$";
+            }
+            description "4to6 mapping instance name";
+          }
+
+          leaf translate-all {
+            type boolean;
+            default "false";
+            description "Enables the translate-all option";
+          } // End of leaf name
+        } // End of list mapping-instance
+      } // End of container mapping-instances
+    } // End of container settings
+  } // End of container dns64
+} // End of module dns64

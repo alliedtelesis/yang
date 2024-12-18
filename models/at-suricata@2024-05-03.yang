@@ -1,0 +1,89 @@
+module at-suricata {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-suricata";
+  prefix at-suri;
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description "This document defines a YANG module for
+    the Suricata IPS engine on Allied Telesis products";
+
+  revision 2024-05-03 {
+    description "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container suricata {
+    description "Data model for the Suricata IPS engine";
+    container state {
+      config false;
+      description "State of the Suricata engine";
+      leaf version {
+        type string;
+        description "Suricata's version";
+      }
+      leaf uptime {
+        type uint32;
+        description "Suricata's uptime in seconds";
+      }
+      container rules {
+        description "Rule state";
+        leaf loaded {
+          type uint32;
+          description "Number of rules loaded";
+        }
+        leaf skipped {
+          type uint32;
+          description "Number of rules skipped";
+        }
+        leaf failed {
+          type uint32;
+          description "Number of rules that failed to load";
+        }
+      }
+      list interfaces {
+        key "name";
+        description "Interface's state";
+        leaf name {
+          type string;
+          description "Name of the interface";
+        }
+        leaf pkts {
+          type uint32;
+          description "Number of packets processed";
+        }
+        leaf drop {
+          type uint32;
+          description "Number of packets dropped";
+        }
+        leaf bypassed {
+          type uint32;
+          description "Number of packets bypassed";
+        }
+        leaf invalid-checksums {
+          type uint32;
+          description "Number of invalid checksums";
+        }
+      }
+      list statistics {
+        key "name";
+        description "Engine statistics";
+        leaf name {
+          type string;
+          description "Name";
+        }
+        leaf value {
+          type uint64;
+          description "Value";
+        }
+      }
+    }
+  }
+}

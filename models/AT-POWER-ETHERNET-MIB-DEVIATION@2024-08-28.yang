@@ -1,0 +1,34 @@
+module AT-POWER-ETHERNET-MIB-DEVIATION {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-power-ethernet-mib-deviation";
+  prefix at-pe-mib;
+
+  import POWER-ETHERNET-MIB {
+    prefix POWER-ETHERNET-MIB;
+  }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the POWER-ETHERNET-MIB module.";
+
+  revision 2024-08-28 {
+    description
+      "Initial revision. Don't support all variables in first release.";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  deviation /POWER-ETHERNET-MIB:POWER-ETHERNET-MIB/POWER-ETHERNET-MIB:pethPsePortTable {
+    deviate not-supported;
+  }
+  deviation /POWER-ETHERNET-MIB:POWER-ETHERNET-MIB/POWER-ETHERNET-MIB:pethNotificationControlTable {
+    deviate not-supported;
+  }
+
+}

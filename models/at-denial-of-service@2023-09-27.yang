@@ -1,0 +1,92 @@
+module at-denial-of-service {
+  yang-version 1.1;
+
+  namespace "http://alliedtelesis.com/ns/yang/at-denial-of-service";
+  prefix at-dos;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for
+    Allied Telesis denial of service (dos)";
+
+  revision 2023-09-27 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  grouping interface-state {
+    description
+      "Denial of Service interface state information";
+    leaf port_status {
+      type uint8;
+      description
+        "DoS port status";
+    }
+    container stats {
+      description
+        "Interface statistics";
+      leaf ipoptions {
+        type uint32;
+        description
+          "Ipoptions attack count";
+      }
+      leaf land {
+        type uint32;
+        description
+          "LAND attack count";
+      }
+      leaf pingofdeath {
+        type uint32;
+        description
+          "Ping of death attack count";
+      }
+      leaf teardrop {
+        type uint32;
+        description
+          "Teardrop attack count";
+      }
+      leaf synflood {
+        type uint32;
+        description
+          "Synflood attack count";
+      }
+      leaf smurf {
+        type uint32;
+        description
+          "Smurf attack count";
+      }
+    }
+  }
+
+  container dos {
+    description
+      "DoS parameters";
+
+    list interfaces {
+      key "name";
+      description
+        "The list of named interfaces on the device.";
+      leaf name {
+        type string;
+        description
+          "References the name of the interface";
+      }
+
+      container state {
+        config false;
+        description
+          "Operational state data at the interface level";
+        uses interface-state;
+      }
+    }
+  }
+}

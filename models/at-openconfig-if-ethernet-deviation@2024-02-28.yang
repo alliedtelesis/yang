@@ -1,0 +1,84 @@
+module at-openconfig-if-ethernet-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-openconfig-if-ethernet-deviation";
+  prefix at-oc-if-eth;
+
+  import openconfig-interfaces {
+    prefix oc-if;
+  }
+  import openconfig-if-ethernet {
+    prefix oc-eth;
+  }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the openconfig-if-ethernet module.";
+
+  revision 2024-02-28 {
+    description
+      "First implementation of the model";
+  }
+  revision 2023-12-05 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  /* Don't support configuration of ethernet parameters through this model */
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config/oc-eth:mac-address {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config/oc-eth:auto-negotiate {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config/oc-eth:standalone-link-training {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config/oc-eth:duplex-mode {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config/oc-eth:port-speed {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config/oc-eth:enable-flow-control {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config/oc-eth:fec-mode {
+    deviate not-supported;
+  }
+
+  /* Some state variables are not supported */
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state/oc-eth:auto-negotiate {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state/oc-eth:standalone-link-training {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state/oc-eth:enable-flow-control {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state/oc-eth:fec-mode {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state/oc-eth:hw-mac-address {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state/oc-eth:negotiated-duplex-mode {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state/oc-eth:negotiated-port-speed {
+    deviate not-supported;
+  }
+
+  /* Don't support counters */
+  deviation /oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state/oc-eth:counters {
+    deviate not-supported;
+  }
+}

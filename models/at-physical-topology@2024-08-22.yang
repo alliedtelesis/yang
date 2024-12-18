@@ -1,0 +1,100 @@
+module at-physical-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-physical-topology";
+  prefix at-physt;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to Physical topology.";
+
+  revision "2024-08-22" {
+    description "Add os-name to physical-node-attributes";
+  }
+
+  revision "2023-02-13" {
+    description "Initial revision";
+  }
+
+  grouping physical-network-type {
+    description
+      "Indicates the topology type to be Physical.";
+    container physical-topology {
+      presence "Indicates Physical Network Topology.";
+      description
+        "The presence of the container node indicates Physical Network Topology.";
+    }
+  }
+
+  grouping physical-node-attributes {
+    container physical-node-attributes {
+      description
+        "Physical node attributes";
+      leaf manufacturer-name {
+        type string;
+        description
+          "Manufacturer name";
+      }
+      leaf model-name {
+        type string;
+        description
+          "Model name";
+      }
+      leaf board-id {
+        type uint32;
+        description
+          "Board ID (for Allied Telesis products)";
+      }
+      leaf serial-number {
+        type string;
+        description
+          "Serial number";
+      }
+      leaf hardware-revision {
+        type string;
+        description
+          "Hardware revision";
+      }
+      leaf bootloader-revision {
+        type string;
+        description
+          "Bootloader revision";
+      }
+      leaf software-revision {
+        type string;
+        description
+          "Software revision";
+      }
+      leaf software-release {
+        type string;
+        description
+          "Software release name";
+      }
+      leaf os-name {
+        type string;
+        description
+          "Operating system name";
+      }
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses physical-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nw:node" {
+    when '/nw:networks/nw:network/nw:network-types/at-physt:physical-topology' {
+      description
+        "Agumentation parameters apply only for networks with Physical topology.";
+    }
+    uses physical-node-attributes;
+  }
+}

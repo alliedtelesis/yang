@@ -1,0 +1,89 @@
+module at-tunnel-inline {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-tunnel-inline";
+  prefix at-tunnel-inline;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for the Tunnel Inline Processing";
+
+  revision 2022-05-26 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container tunnel-inline {
+    description "Tunnel Inline Processing";
+    container state {
+      config false;
+      description "Tunnel Inline State";
+      leaf enabled {
+        type boolean;
+        default false;
+        description "Tunnel Inline is enabled/disabled";
+      }
+      list counters {
+        key "name";
+        description "Counter entry with key name";
+        leaf name {
+          type string;
+          mandatory true;
+          description "Counter name";
+        }
+        leaf value {
+          type string;
+          description "Counter value";
+        }
+      }
+      list workers {
+        key "name";
+        description "Worker list";
+        leaf index {
+          type string;
+          mandatory true;
+          description "Worker name";
+        }
+        leaf name {
+          type string;
+          mandatory true;
+          description "Worker name";
+        }
+        leaf state {
+          type enumeration {
+            enum RUNNING {
+              description "Acively running";
+            }
+            enum SLEEPING {
+              description "Sleeping waiting for work";
+            }
+          }
+          mandatory true;
+          description "Worker state";
+        }
+        list counters {
+          key "name";
+          description "Counter entry with key name";
+          leaf name {
+            type string;
+            mandatory true;
+            description "Counter name";
+          }
+          leaf value {
+            type string;
+            description "Counter value";
+          }
+        }
+      }
+    }
+  }
+}

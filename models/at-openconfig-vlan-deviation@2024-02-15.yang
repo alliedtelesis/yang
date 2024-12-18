@@ -1,0 +1,49 @@
+module at-openconfig-vlan-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-openconfig-vlan-deviation";
+  prefix at-oc-vlan;
+
+  import openconfig-vlan {
+    prefix oc-vlan;
+  }
+  import openconfig-interfaces {
+    prefix oc-if;
+  }
+  import openconfig-if-aggregate {
+    prefix oc-lag;
+  }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the openconfig-vlan module.";
+
+  revision 2024-02-15 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-if:config/oc-vlan:tpid {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-if:state/oc-vlan:tpid {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-if:subinterfaces/oc-if:subinterface/oc-vlan:vlan {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-lag:aggregation/oc-vlan:switched-vlan {
+    deviate not-supported;
+  }
+  deviation /oc-if:interfaces/oc-if:interface/oc-vlan:routed-vlan {
+    deviate not-supported;
+  }
+
+
+}

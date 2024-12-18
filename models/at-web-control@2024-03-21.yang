@@ -1,0 +1,342 @@
+module at-web-control {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-web-control";
+  prefix at-webctl;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for Allied Telesis Web Control";
+
+  revision 2024-03-21 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  typedef word-token {
+    type string {
+      pattern '[ -~]{1,64}';
+    }
+    description "String for WORD match";
+  }
+
+  container web-control {
+    container settings {
+      leaf protect {
+        type enumeration {
+          enum disable {
+            value 0;
+            description
+              "Disable Web Control";
+          }
+          enum enable {
+            value 1;
+            description
+              "Enable Web Control";
+          }
+        }
+        default disable;
+        description
+          "Web Control activation";
+      }
+      leaf default-action {
+        type enumeration {
+          enum permit {
+            value 1;
+            description
+              "Permit traffic by default";
+          }
+          enum deny {
+            value 2;
+            description
+              "Deny traffic by default";
+          }
+        }
+        default deny;
+        description
+          "Default action to apply";
+      }
+      container da {
+        leaf enable {
+          type enumeration {
+            enum disable {
+              value 0;
+              description
+                "Disable Digital Arts";
+            }
+            enum enable {
+              value 1;
+              description
+                "Enable Digital Arts";
+            }
+          }
+          default disable;
+          description
+            "Digital Arts activation";
+        }
+        description
+          "Digital Arts configuration";
+      }
+      container webroot {
+        leaf enable {
+          type enumeration {
+            enum disable {
+              value 0;
+              description
+                "Disable Webroot";
+            }
+            enum enable {
+              value 1;
+              description
+                "Enable Webroot";
+            }
+          }
+          default disable;
+          description
+            "Webroot activation";
+        }
+        description
+          "Webroot configuration";
+      }
+      container opentext {
+        leaf enable {
+          type enumeration {
+            enum disable {
+              value 0;
+              description
+                "Disable OpenText";
+            }
+            enum enable {
+              value 1;
+              description
+                "Enable OpenText";
+            }
+          }
+          default disable;
+          description
+            "OpenText activation";
+        }
+        description
+          "Opentext configuration";
+      }
+      description
+        "Web Control configuration";
+    }
+    leaf licensed {
+      type enumeration {
+        enum unlicensed {
+          value 0;
+          description
+            "Web Control is unlicensed";
+        }
+        enum licensed {
+          value 1;
+          description
+            "Web Control is licensed";
+        }
+      }
+      default unlicensed;
+      config false;
+      description
+        "Web Control license status.";
+    }
+    container statistics {
+      leaf cache-size {
+        type uint64;
+        description
+          "Counter for cache size";
+      }
+      leaf cache-hit {
+        type uint64;
+        description
+          "Counter for cache hits";
+      }
+      leaf cache-miss {
+        type uint64;
+        description
+          "Counter for cache misses";
+      }
+      leaf rule-miss {
+        type uint64;
+        description
+          "Counter for rule misses";
+      }
+      leaf category-miss {
+        type uint64;
+        description
+          "Counter for category misses";
+      }
+      leaf rule-total {
+        type uint64;
+        description
+          "Counter for total number of requests processed";
+      }
+      leaf category-total {
+        type uint64;
+        description
+          "Counter for total number of requests processed";
+      }
+      config false;
+      description
+        "Web Control statistics";
+    }
+    container state {
+      leaf provider {
+        type enumeration {
+          enum none {
+            value -1;
+            description
+              "No selected provider";
+          }
+          enum digital-arts {
+            value 0;
+            description
+              "Digital Arts selected";
+          }
+          enum webroot {
+            value 1;
+            description
+              "Webroot selected";
+          }
+          enum opentext {
+            value 2;
+            description
+              "OpenText selected";
+          }
+        }
+        default none;
+        config false;
+        description
+          "Currently selected provider.";
+      }
+      description
+        "Web Control state";
+    }
+    list categories {
+      key "name";
+      leaf name {
+        type string {
+          pattern '^(.{1,2}|[^a]..|.[^n].|..[^y]|.{4,64})$';
+        }
+        description
+          "Category name; Category 'any' is excluded as it is a predefined keyword";
+      }
+      leaf hit-counter {
+        type uint64;
+        default 0;
+        config false;
+        description
+          "Counter for category hits";
+      }
+      leaf id {
+        type uint8 {
+          range "1..255";
+        }
+        description
+          "DA category ID (not used in custom categories)";
+      }
+      leaf type {
+        type enumeration {
+          enum da {
+            value 0;
+            description
+              "Digital Arts category";
+          }
+          enum custom {
+            value 1;
+            description
+              "Custom category";
+          }
+          enum ot {
+            value 2;
+            description
+              "Custom category";
+          }
+        }
+        description
+          "Type of category";
+      }
+      leaf-list matches {
+        type word-token;
+        description
+          "String to match for this category";
+      }
+      description
+        "Web Control categories";
+    }
+    list rules {
+      key "id";
+      leaf id {
+        type uint16 {
+          range "1..65535";
+        }
+        description
+          "Integer ID of the rule";
+      }
+      leaf action {
+        type enumeration {
+          enum permit {
+            value 1;
+            description
+              "Permit traffic by default";
+          }
+          enum deny {
+            value 2;
+            description
+              "Deny traffic by default";
+          }
+        }
+        description
+          "Action to apply when traffic matches this rule.";
+      }
+      leaf category {
+        type word-token;
+        description
+          "Name of the category the rule applies to";
+      }
+      leaf hit-counter {
+        type uint64;
+        default 0;
+        config false;
+        description
+          "Counter for rule hits";
+      }
+      leaf entity {
+        type word-token;
+        description
+          "Name of the entity the rule applies to";
+      }
+      description
+        "Web Control rules";
+    }
+    list bypass {
+      key "name";
+      leaf name {
+        type string {
+          pattern '([a-zA-Z0-9_\-]{1,64}(\.[a-zA-Z0-9_\-]{1,64}(\.[a-zA-Z0-9_\-]{1,64})?)?)';
+        }
+        description
+          "Entity to be bypassed";
+      }
+      leaf hit-counter {
+        type uint64;
+        config false;
+        description
+          "Counter for bypass hits";
+      }
+      description
+        "Entity to be bypassed";
+    }
+    description
+      "Web Control configuration and state";
+  }
+}

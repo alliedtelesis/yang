@@ -1,0 +1,370 @@
+module at-dpi {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-dpi";
+  prefix at-dpi;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for the DPI API";
+
+  revision 2019-03-29 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container dpi {
+    description "Data model for DPI";
+    container settings {
+      description "Configuration of DPI";
+      leaf enable {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable DPI";
+          }
+          enum enable {
+            value 1;
+            description "Enable DPI";
+          }
+        }
+        default disable;
+        description "Configuration of DPI";
+      }
+
+      leaf provider {
+        type enumeration {
+          enum procera {
+            description "Procera DPI";
+          }
+          enum built-in {
+            description "Use the built-in DPI data-set";
+          }
+          enum remote {
+            description "Use a remote data-set";
+          }
+        }
+        description "Name of the DPI database provider. Must be set before enabling";
+      }
+
+      container remote {
+        description "DPI remote provider connection details";
+
+        leaf url {
+          type string {
+            pattern "^(http|https)://(.*)$";
+          }
+          description "URL of the remote provider";
+        }
+
+        leaf username {
+          type string;
+          description "Authentication username";
+        }
+
+        leaf password {
+          type string;
+          description "Authentication password";
+        }
+      }
+
+      leaf update-interval {
+        type uint32 {
+            range "0 | 10..525600";
+          }
+        default 60;
+        description "Interval for resource update checking in minutes";
+      }
+
+      leaf learning {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable DPI Learning";
+          }
+          enum enable {
+            value 1;
+            description "Enable DPI Learning";
+          }
+        }
+        default disable;
+        description "Configuration of DPI Learning";
+      }
+
+      leaf learning-cache-size {
+        type uint32 {
+            range "50..16000";
+          }
+        default 10000;
+        description "Configuration of DPI Learning cache size";
+      }
+
+      container publishing {
+        description "Publish the DPI learned application database";
+        leaf enable {
+          type enumeration {
+            enum disable {
+              value 0;
+              description "Disable DPI Application publishing";
+            }
+            enum enable {
+              value 1;
+              description "Enable DPI Application publishing";
+            }
+          }
+          default disable;
+          description "Enable";
+        }
+      }
+
+      leaf counters-detailed {
+        type enumeration {
+          enum disable {
+            value 0;
+            description "Disable DPI Statistics Per Entity";
+          }
+          enum enable {
+            value 1;
+            description "Enable DPI Statistics Per Entity";
+          }
+        }
+        default disable;
+        description "Configuration of DPI Statistics Per Entity";
+      }
+
+      container web-categorization {
+        description "DPI Web Categorization details";
+        leaf enable {
+          type boolean;
+          description "Enable/disable DPI Web Categorization";
+        }
+
+        leaf provider {
+          type enumeration {
+            enum None {
+              description "No engine used";
+            }
+            enum digital-arts {
+              description "Digital Arts categorization";
+            }
+            enum opentext {
+              description "OpenText categorization";
+            }
+          }
+          default None;
+          description "Web Categorization engine";
+        }
+      }
+    } // End of container settings
+
+    leaf statistics {
+      type string;
+      config false;
+      description "DPI statistics. CSV of zero or more of application,pkt-count,byte-count";
+    }
+
+    leaf state {
+      type enumeration {
+        enum unknown {
+          value -1;
+          description "The status is unknown";
+        }
+        enum disabled {
+          value 0;
+          description "DPI is disabled";
+        }
+        enum unlicensed {
+          value 1;
+          description "DPI is unlicensed";
+        }
+        enum loading {
+          value 2;
+          description "Loading the DPI signatures";
+        }
+        enum failed {
+          value 3;
+          description "Failed to install the DPI signatures";
+        }
+        enum unloading {
+          value 4;
+          description "Unloading the DPI signatures";
+        }
+        enum running {
+          value 5;
+          description "DPI is running";
+        }
+      }
+      default disabled;
+      config false;
+      description "State of the DPI engine";
+    }
+
+    leaf version {
+      type string;
+      config false;
+      description "The current DPI database version ID";
+    }
+
+    container engine {
+      config false;
+      description "DPI engine information";
+
+      leaf status {
+        type string;
+        config false;
+        description "Status of the DPI engine";
+      }
+
+      leaf-list counters {
+        type string;
+        description "List of counters and values for the DPI engine";
+      }
+
+      leaf-list interfaces {
+        type string;
+        description "List of interfaces from where to process packets";
+      }
+    } //End of container engine
+
+    container detailed-counters {
+      config false;
+      description "DPI detailed counters";
+
+      list entities {
+        key "name";
+        description "DPI entities by entity name";
+
+        leaf name {
+          type string;
+          mandatory true;
+          description "The name of entity";
+        }
+
+        list apps {
+          key "name";
+          description "DPI applications by application name";
+
+          leaf name {
+            type string;
+            mandatory true;
+            description "The name of DPI application";
+          }
+
+          leaf tx-bytes {
+            type uint64;
+            description "Transmit bytes";
+          }
+
+          leaf rx-bytes {
+            type uint64;
+            description "Receive bytes";
+          }
+
+          leaf tx-pkts {
+            type uint64;
+            description "Transmit packets";
+          }
+
+          leaf rx-pkts {
+            type uint64;
+            description "Receive packets";
+          }
+        }
+      }
+    } //End of container detailed-counters
+
+    container database {
+      config false;
+      description "Current DPI Application database";
+
+      container applications {
+        description "List of learned DPI applications";
+        list application {
+          key "name";
+          description "Learned application information";
+          leaf name {
+            type string;
+            description "Application name";
+          }
+
+          leaf id {
+            type uint64;
+            mandatory true;
+            description "ID";
+          }
+
+          leaf description {
+            type string;
+            mandatory true;
+            description "Description of application";
+          }
+
+          leaf-list hosts {
+              type string;
+              description "Host serving this application: pattern=[tcp|udp]:address:port";
+          }
+        }
+      }
+    }
+
+    container web-categorization {
+      description "Web categorization information";
+      leaf provider-state {
+        type enumeration {
+          enum none {
+            description "No provider used";
+          }
+          enum unlicensed {
+            description "Provider is unlicensed";
+          }
+          enum digital-arts {
+            description "Digital Arts";
+          }
+          enum opentext {
+            description "OpenText";
+          }
+        }
+        default none;
+        config false;
+        description "Web Categorization engine";
+      }
+
+      container cache {
+        description "Cache of categorized web results";
+        list hosts {
+          key hostname;
+          description "Contents of web categorization cache";
+
+          leaf hostname {
+            type string;
+            description "web categorization hostname";
+          }
+
+          leaf web-category {
+            type string;
+            description "web categorization category";
+          }
+
+          leaf queued {
+            type boolean;
+            description "queued for web categorization refresh";
+          }
+
+          leaf expiry {
+            type string;
+            description "Expiry timestamp for host's categorization";
+          }
+        } // End of list hosts
+      } // End of container cached
+    } // End of container web-categorization
+  } //End of container dpi
+} //End of module dpi

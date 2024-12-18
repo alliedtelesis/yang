@@ -1,0 +1,1115 @@
+module at-lldp {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-lldp";
+  prefix at-lldp;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for
+    Allied Telesis LLDP";
+
+  revision 2021-11-10 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container lldp {
+    description
+      "Describes LLDP status and information.";
+    list remote-entries {
+      key "chassis-id";
+      config false;
+      description
+        "List of LLDP remote entries";
+      leaf chassis-id {
+        type string;
+        config false;
+        description
+          "Chassis ID TLV string";
+      }
+      leaf chassis-id-sub-type {
+        type int32;
+        default "0";
+        config false;
+        description
+          "Chassis ID subtype";
+      }
+      leaf port-id {
+        type string;
+        config false;
+        description
+          "Port ID TLV string";
+      }
+      leaf port-id-sub-type {
+        type int32;
+        default "0";
+        config false;
+        description
+          "Port ID subtype";
+      }
+      leaf time-to-live {
+        type int32;
+        default "0";
+        config false;
+        description
+          "The length of time in seconds for which the information received in the LLDPDU remains valid.";
+      }
+      leaf port-description {
+        type string;
+        config false;
+        description
+          "A description of the device’s port in alpha-numeric format.";
+      }
+      leaf local-ifindex {
+        type int32;
+        default "0";
+        config false;
+        description
+          "Port number where the entry was learned";
+      }
+      leaf local-if-name {
+        type string;
+        config false;
+        description
+          "Local interface name";
+      }
+      leaf mac {
+        type string;
+        config false;
+        description
+          "LLDP remote device Hardware Address (xxxx.xxxx.xxxx)";
+      }
+      leaf system-name {
+        type string;
+        config false;
+        description
+          "Name of the remote device";
+      }
+      leaf system-description {
+        type string;
+        config false;
+        description
+          "Description of the remote device";
+      }
+      leaf system-capabilities-available {
+        type string;
+        config false;
+        description
+          "Capabilities that are supported on the remote system";
+      }
+      leaf system-capabilities-enabled {
+        type string;
+        config false;
+        description
+          "Capabilities that are enabled on the remote system";
+      }
+      leaf system-uuid {
+        type string;
+        config false;
+        description
+          "Unique identifier of the system";
+      }
+      leaf ieee802-3-autoneg-supported {
+        type enumeration {
+          enum Not-supported {
+            description
+              "Autonegotiation is not supported";
+          }
+          enum Supported {
+            description
+              "Autonegotiation is supported";
+          }
+        }
+        config false;
+        description
+          "IEEE802.3 MAC/PHY Configuration Autonegotiation support status of the remote device";
+      }
+      leaf ieee802-3-autoneg-enabled {
+        type enumeration {
+          enum Not-enabled {
+            description
+              "Autonegotiation is not enabled";
+          }
+          enum Enabled {
+            description
+              "Autonegotiation is enabled";
+          }
+        }
+        config false;
+        description
+          "IEEE802.3 MAC/PHY Configuration Autonegotiation enabled status of the remote device";
+      }
+      leaf ieee802-3-autoneg-advert-caps {
+        type enumeration {
+          enum Cap-1000BASE-TFD {
+            value 1;
+            description
+              "1000BASE-T full duplex mode";
+          }
+          enum Cap-1000BASE-THD {
+            value 2;
+            description
+              "1000BASE-T half duplex mode";
+          }
+          enum Cap-1000BASE-XFD {
+            value 4;
+            description
+              "1000BASE-X, -LX, -SX, -CX full duplex mode";
+          }
+          enum Cap-1000BASE-XHD {
+            value 8;
+            description
+              "1000BASE-X, -LX, -SX, -CX half duplex mode";
+          }
+          enum Cap-Asym-Sym-Pause {
+            value 16;
+            description
+              "Asymmetric and Symmetric PAUSE for full-duplex links";
+          }
+          enum Cap-Sym-pause {
+            value 32;
+            description
+              "Symmetric PAUSE for full-duplex links";
+          }
+          enum Cap-Asym-pause {
+            value 64;
+            description
+              "Asymmetric PAUSE for full-duplex links";
+          }
+          enum Cap-Pause {
+            value 128;
+            description
+              "PAUSE for full-duplex links";
+          }
+          enum Cap-100BASE-T2FD {
+            value 256;
+            description
+              "100BASE-T2 full duplex mode";
+          }
+          enum Cap-100BASE-T2HD {
+            value 512;
+            description
+              "100BASE-T2 half duplex mode";
+          }
+          enum Cap-100BASE-TXFD {
+            value 1024;
+            description
+              "100BASE-TX full duplex mode";
+          }
+          enum Cap-100BASE-TXHD {
+            value 2048;
+            description
+              "100BASE-TX half duplex mode";
+          }
+          enum Cap-100BASE-T4 {
+            value 4096;
+            description
+              "100BASE-T4";
+          }
+          enum Cap-10BASE-TFD {
+            value 8192;
+            description
+              "10BASE-T full duplex mode";
+          }
+          enum Cap-10BASE-THD {
+            value 16384;
+            description
+              "10BASE-T half duplex mode";
+          }
+          enum Cap-other-unknown {
+            value 32768;
+            description
+              "Other or Unknown capability";
+          }
+        }
+        config false;
+        description
+          "IEEE802.3 MAC/PHY Configuration autonegotiation advertised capability of the remote device";
+      }
+      leaf ieee802-3-oper-mau-type {
+        type enumeration {
+          enum MAU-Unknown {
+            description
+              "MAU type is unknown";
+          }
+          enum MAU-AUI {
+            description
+              "No internal MAU, view from AUI";
+          }
+          enum MAU-10Base5 {
+            description
+              "Thick coax MAU";
+          }
+          enum MAU-FOIRL {
+            description
+              "Fiber Optic Inter-Repeater Link MAU";
+          }
+          enum MAU-10Base2 {
+            description
+              "Thin coax MAU";
+          }
+          enum MAU-10BaseT {
+            description
+              "UTP MAU, duplex unknown";
+          }
+          enum MAU-10BaseFP {
+            description
+              "Passive fiber MAU";
+          }
+          enum MAU-10BaseFB {
+            description
+              "Synchronous fiber MAU";
+          }
+          enum MAU-10BaseFL {
+            description
+              "Asynchronous fibre MAU";
+          }
+          enum MAU-10Broad36 {
+            description
+              "Broadband DTE MAU";
+          }
+          enum MAU-10BaseTHD {
+            description
+              "UTP MAU, half duplex mode";
+          }
+          enum MAU-10BaseTFD {
+            description
+              "UTP MAU, full duplex mode";
+          }
+          enum MAU-10BaseFLHD {
+            description
+              "Asynchronous fiber MAU, half duplex mode";
+          }
+          enum MAU-10BaseFLFD {
+            description
+              "Asynchronous fiber MAU, full duplex mode";
+          }
+          enum MAU-100BaseT4 {
+            description
+              "4 pair category 3 UTP";
+          }
+          enum MAU-100BaseTXHD {
+            description
+              "2 pair category 5 UTP, half duplex mode";
+          }
+          enum MAU-100BaseTXFD {
+            description
+              "2 pair category 5 UTP, full duplex mode";
+          }
+          enum MAU-100BaseFXHD {
+            description
+              "X fiber over PMT, half duplex mode";
+          }
+          enum MAU-100BaseFXFD {
+            description
+              "X fiber over PMT, full duplex mode";
+          }
+          enum MAU-100BaseT2HD {
+            description
+              "2 pair category 3 UTP, half duplex mode";
+          }
+          enum MAU-100BaseT2FD {
+            description
+              "2 pair category 3 UTP, full duplex mode";
+          }
+          enum MAU-1000BaseXHD {
+            description
+              "PCS/PMA, unknown PMD, half duplex mode";
+          }
+          enum MAU-1000BaseXFD {
+            description
+              "PCS/PMA, unknown PMD, full duplex mode";
+          }
+          enum MAU-1000BaseLXHD {
+            description
+              "Fiber over long-wavelength laser, half duplex mode";
+          }
+          enum MAU-1000BaseLXFD {
+            description
+              "Fiber over long-wavelength laser, full duplex mode";
+          }
+          enum MAU-1000BaseSXHD {
+            description
+              "Fiber over short-wavelength laser, half duplex mode";
+          }
+          enum MAU-1000BaseSXFD {
+            description
+              "Fiber over short-wavelength laser, full duplex mode";
+          }
+          enum MAU-1000BaseCXHD {
+            description
+              "Copper over 150-Ohm balanced cable, half duplex mode";
+          }
+          enum MAU-1000BaseCXFD {
+            description
+              "Copper over 150-Ohm balanced cable, full duplex mode";
+          }
+          enum MAU-1000BaseTHD {
+            description
+              "Four-pair Category 5 UTP, half duplex mode";
+          }
+          enum MAU-1000BaseTFD {
+            description
+              "Four-pair Category 5 UTP, full duplex mode";
+          }
+          enum MAU-10GigBaseX {
+            description
+              "X PCS/PMA, unknown PMD";
+          }
+          enum MAU-10GigBaseLX4 {
+            description
+              "X fiber over WWDM optics";
+          }
+          enum MAU-10GigBaseR {
+            description
+              "R PCS/PMA, unknown PMD";
+          }
+          enum MAU-10GigBaseER {
+            description
+              "R fiber over 1550 nm optics";
+          }
+          enum MAU-10GigBaseLR {
+            description
+              "R fiber over 1310 nm optics";
+          }
+          enum MAU-10GigBaseSR {
+            description
+              "R fiber over 850 nm optics";
+          }
+          enum MAU-10GigBaseW {
+            description
+              "W PCS/PMA, unknown PMD";
+          }
+          enum MAU-10GigBaseEW {
+            description
+              "W fiber over 1550 nm optics";
+          }
+          enum MAU-10GigBaseLW {
+            description
+              "W fiber over 1310 nm optics";
+          }
+          enum MAU-10GigBaseSW {
+            description
+              "W fiber over 850 nm optics";
+          }
+          enum MAU-10GigBaseCX4 {
+            description
+              "X copper over 8 pair 100-Ohm balanced cable";
+          }
+          enum MAU-2BaseTL {
+            description
+              "Voice grade UTP copper, up to 2700m, optional PAF";
+          }
+          enum MAU-10PassTS {
+            description
+              "Voice grade UTP copper, up to 750m, optional PAF";
+          }
+          enum MAU-100BaseBX10D {
+            description
+              "One single-mode fiber OLT, long wavelength, 10km";
+          }
+          enum MAU-100BaseBX10U {
+            description
+              "One single-mode fiber ONU, long wavelength, 10km";
+          }
+          enum MAU-100BaseLX10 {
+            description
+              "Two single-mode fibers, long wavelength, 10km";
+          }
+          enum MAU-1000BaseBX10D {
+            description
+              "One single-mode fiber OLT, long wavelength, 10km";
+          }
+          enum MAU-1000BaseBX10U {
+            description
+              "One single-mode fiber ONU, long wavelength, 10km";
+          }
+          enum MAU-1000BaseLX10 {
+            description
+              "Two sigle-mode fiber, long wavelength, 10km";
+          }
+          enum MAU-1000BasePX10D {
+            description
+              "One single-mode fiber EPON OLT, 10km";
+          }
+          enum MAU-1000BasePX10U {
+            description
+              "One single-mode fiber EPON ONU, 10km";
+          }
+          enum MAU-1000BasePX20D {
+            description
+              "One single-mode fiber EPON OLT, 20km";
+          }
+          enum MAU-1000BasePX20U {
+            description
+              "One single-mode fiber EPON ONU, 20km";
+          }
+          enum MAU-10GbaseT {
+            description
+              "Four-pair Category 6A or better, full duplex mode only";
+          }
+          enum MAU-10GbaseLRM {
+            description
+              "R multimode fiber over 1310 nm optics";
+          }
+          enum MAU-1000baseKX {
+            description
+              "X backplane, full duplex mode only";
+          }
+          enum MAU-10GbaseKX4 {
+            description
+              "4 lane X backplane, full duplex mode only";
+          }
+          enum MAU-10GbaseKR {
+            description
+              "R backplane, full duplex mode only";
+          }
+          enum MAU-10G1GbasePRXD1 {
+            description
+              "One single-mode fiber asymmetric-rate EPON OLT, supporting low power budget (PRX10)";
+          }
+          enum MAU-10G1GbasePRXD2 {
+            description
+              "One single-mode fiber asymmetric-rate EPON OLT, supporting meddium power budget (PRX20)";
+          }
+          enum MAU-10G1GbasePRXD3 {
+            description
+              "One single-mode fiber asymmetric-rate EPON OLT, supporting high power budget (PRX30)";
+          }
+          enum MAU-10G1GbasePRXU1 {
+            description
+              "One single-mode fiber asymmetric-rate EPON ONU, supporting low power budget (PRX10)";
+          }
+          enum MAU-10G1GbasePRXU2 {
+            description
+              "One single-mode fiber asymmetric-rate EPON ONU, supporting medium power budget (PRX20)";
+          }
+          enum MAU-10G1GbasePRXU3 {
+            description
+              "One single-mode fiber asymmetric-rate EPON ONU, supporting high power budget (PRX30)";
+          }
+          enum MAU-10GbasePRD1 {
+            description
+              "One single-mode fiber symmetric-rate EPON OLT, supporting low power budget (PR10)";
+          }
+          enum MAU-10GbasePRD2 {
+            description
+              "One single-mode fiber symmetric-rate EPON OLT, supporting medium power budget (PR20)";
+          }
+          enum MAU-10GbasePRD3 {
+            description
+              "One single-mode fiber symmetric-rate EPON OLT, supporting high power budget (PR30)";
+          }
+          enum MAU-10GbasePRU1 {
+            description
+              "One single-mode fiber symmetric-rate EPON ONU, supporting low and medium power budget (PR10 and PR20)";
+          }
+          enum MAU-10GbasePRU3 {
+            description
+              "One single-mode fiber symmetric-rate EPON ONU, supporting high power budget (PR30)";
+          }
+          enum MAU-40GbaseKR4 {
+            description
+              "40GBASE-R PCS/PMA over an electrical backplane";
+          }
+          enum MAU-40GbaseCR4 {
+            description
+              "40GBASE-R PCS/PMA over 4 lane shielded copper balanced cable";
+          }
+          enum MAU-40GbaseSR4 {
+            description
+              "40GBASE-R PCS/PMA over 4 lane multimode fiber";
+          }
+          enum MAU-40GbaseFR {
+            description
+              "40GBASE-R PCS/PMA over single mode fiber";
+          }
+          enum MAU-40GbaseLR4 {
+            description
+              "40GBASE-R PCS/PMA over 4 WDM lane single mode fiber";
+          }
+          enum MAU-100GbaseCR10 {
+            description
+              "100GBASE-R PCS/PMA over 10 lane shielded copper balanced cable";
+          }
+          enum MAU-100GbaseSR10 {
+            description
+              "100GBASE-R PCS/PMA over 10 lane multimode fiber";
+          }
+          enum MAU-100GbaseLR4 {
+            description
+              "100GBASE-R PCS/PMA over 4 WDM lane single mode fiber, long reach";
+          }
+          enum MAU-100GbaseER4 {
+            description
+              "100GBASE-R PCS/PMA over 4 WDM lane single mode fiber PMD, extended reach";
+          }
+          enum MAU-1000baseT1 {
+            description
+              "1000BASE-T1 single balanced twisted-pair copper cabling PHY";
+          }
+          enum MAU-1000basePX30D {
+            description
+              "One single-mode fiber EPON OLT, 20km, 1:32 split ratio";
+          }
+          enum MAU-1000basePX30U {
+            description
+              "One single-mode fiber EPON ONU, 20km, 1:32 split ratio";
+          }
+          enum MAU-1000basePX40D {
+            description
+              "One single-mode fiber EPON OLT, 20km, 1:64 split ratio";
+          }
+          enum MAU-1000basePX40U {
+            description
+              "One single-mode fiber EPON ONU, 20km, 1:64 split ratio";
+          }
+          enum MAU-10G1GbasePRXD4 {
+            description
+              "One single-mode fiber asymmetric-rate EPON OLT, supporting extended power budget (PRX40)";
+          }
+          enum MAU-10G1GbasePRXU4 {
+            description
+              "One single-mode fiber asymmetric-rate EPON ONU, supporting extended power budget (PRX40)";
+          }
+          enum MAU-10GbasePRD4 {
+            description
+              "One single-mode fiber symmetric-rate EPON OLT, supporting extended power budget (PR40)";
+          }
+          enum MAU-10GbasePRU4 {
+            description
+              "One single-mode fiber symmetric-rate EPON ONU, supporting extended power budget (PR40)";
+          }
+          enum MAU-25GbaseCR {
+            description
+              "25GBASE-R PCS/PMA over shielded balanced copper cable";
+          }
+          enum MAU-25GbaseCRS {
+            description
+              "25GBASE-R PCS/PMA over shielded balanced copper cable without RS-FEC";
+          }
+          enum MAU-25GbaseKR {
+            description
+              "25GBASE-R PCS/PMA over an electrical backplane";
+          }
+          enum MAU-25GbaseKRS {
+            description
+              "25GBASE-R PCS/PMA over an electrical backplane without RS-FEC";
+          }
+          enum MAU-25GbaseR {
+            description
+              "25GBASE-R PCS/PMA over undefined PMD";
+          }
+          enum MAU-25GbaseSR {
+            description
+              "25GBASE-R PCS/PMA over multimode fiber";
+          }
+          enum MAU-25GbaseT {
+            description
+              "Four-pair twisted-pair balanced copper cabling";
+          }
+          enum MAU-40GbaseER4 {
+            description
+              "40GBASE-R PCS/PMA over 4 WDM lane single mode fiber";
+          }
+          enum MAU-40GbaseR {
+            description
+              "40GBASE-R PCS as over undefined PMA/PMD";
+          }
+          enum MAU-40GbaseT {
+            description
+              "Four-pair twisted-pair balanced copper cabling";
+          }
+          enum MAU-100GbaseCR4 {
+            description
+              "100GBASE-R PCS/PMA over 4 lane shielded copper balanced cable";
+          }
+          enum MAU-100GbaseKR4 {
+            description
+              "100GBASE-R PCS/PMA over an electrical backplane";
+          }
+          enum MAU-100GbaseKP4 {
+            description
+              "100GBASE-P PCS/PMA over an electrical backplane PMD";
+          }
+          enum MAU-100GbaseR {
+            description
+              "100GBASE-R Multi-lane PCS over undefined PMA/PMD";
+          }
+          enum MAU-100GbaseSR4 {
+            description
+              "100GBASE-R PCS/PMA over 4 lane multimode fiber";
+          }
+          enum MAU-2p5GigT {
+            description
+              "2.5GBASE-T Four-pair twisted-pair balanced copper cabling PHY";
+          }
+          enum MAU-5GigT {
+            description
+              "5GBASE-T Four-pair twisted-pair balanced copper cabling PHY";
+          }
+          enum MAU-100baseT1 {
+            description
+              "100BASE-T1 Single balanced twisted-pair copper cabling PHY";
+          }
+          enum MAU-1000baseRHA {
+            description
+              "1000BASE-RHA Plastic optical fiber PHY";
+          }
+          enum MAU-1000baseRHB {
+            description
+              "1000BASE-RHB Plastic optical fiber PHY";
+          }
+          enum MAU-1000baseRHC {
+            description
+              "1000BASE-RHC Plastic optical fiber PHY";
+          }
+          enum MAU-2p5GbaseKX {
+            description
+              "2.5GBASE-X PMD over an electrical backplane";
+          }
+          enum MAU-2p5GbaseX {
+            description
+              "2.5GBASE-X PCS/PMA over undefined PMD";
+          }
+          enum MAU-5GbaseKR {
+            description
+              "5GBASE-KR PMD over an electrical backplane";
+          }
+          enum MAU-5GbaseR {
+            description
+              "5GBASE-R PCS/PMA over undefined PMD";
+          }
+          enum MAU-10GpassXR {
+            description
+              "Coax cable distribution network PHY continuous downstream/burst mode upstream PHY";
+          }
+          enum MAU-25GbaseLR {
+            description
+              "25GBASE-R PCS/PMA over single-mode fiber PMD, with long reach";
+          }
+          enum MAU-25GbaseER {
+            description
+              "25GBASE-R PCS/PMA over single-mode fiber PMD, with extended reach";
+          }
+          enum MAU-50GbaseR {
+            description
+              "50GBASE-R Multi-lane PCS over undefined PMA/PMD";
+          }
+          enum MAU-50GbaseCR {
+            description
+              "50GBASE-R PCS/PMA over shielded copper balanced cable PMD";
+          }
+          enum MAU-50GbaseKR {
+            description
+              "50GBASE-R PCS/PMA over an electrical backplane PMD";
+          }
+          enum MAU-50GbaseSR {
+            description
+              "50GBASE-R PCS/PMA over multimode fiber PMD";
+          }
+          enum MAU-50GbaseFR {
+            description
+              "50GBASE-R PCS/PMA over single mode fiber PMD with reach up to at least 2 km";
+          }
+          enum MAU-50GbaseLR {
+            description
+              "50GBASE-R PCS/PMA over single mode fiber PMD with reach up to at least 10 km";
+          }
+          enum MAU-50GbaseER {
+            description
+              "50GBASE-R PCS/PMA over single-mode fiber PMD with reach up to at least 40 km";
+          }
+          enum MAU-100GbaseCR2 {
+            description
+              "100GBASE-R PCS/PMA over 2 lane shielded copper balanced cable PMD";
+          }
+          enum MAU-100GbaseKR2 {
+            description
+              "100GBASE-R PCS/PMA over an electrical backplane PMD";
+          }
+          enum MAU-100GbaseSR2 {
+            description
+              "100GBASE-R PCS/PMA over 2 lane multimode fiber PMD";
+          }
+          enum MAU-100GbaseDR {
+            description
+              "100GBASE-R PCS/PMA over single mode fiber PMD";
+          }
+          enum MAU-200GbaseR {
+            description
+              "200GBASE-R Multi-lane PCS over undefined PMA/PMD";
+          }
+          enum MAU-200GbaseDR4 {
+            description
+              "200GBASE-R PCS/PMA over 4-lane single-mode fiber PMD";
+          }
+          enum MAU-200GbaseFR4 {
+            description
+              "200GBASE-R PCS/PMA over 4 WDM lane single-mode fiber PMD with reach up to at least 2 km";
+          }
+          enum MAU-200GbaseLR4 {
+            description
+              "200GBASE-R PCS/PMA over 4 WDM lane single-mode fiber PMD with reach up to at least 10 km";
+          }
+          enum MAU-200GbaseCR4 {
+            description
+              "200GBASE-R PCS/PMA over 4 lane shielded copper balanced cable PMD";
+          }
+          enum MAU-200GbaseKR4 {
+            description
+              "200GBASE-R PCS/PMA over an electrical backplane PMD";
+          }
+          enum MAU-200GbaseSR4 {
+            description
+              "200GBASE-R PCS/PMA over 4 lane multimode fiber PMD";
+          }
+          enum MAU-200GbaseER4 {
+            description
+              "200GBASE-R PCS/PMA over 4 WDM lane single-mode fiber PMD with reach up to at least 40 km";
+          }
+          enum MAU-400GbaseR {
+            description
+              "400GBASE-R Multi-lane PCS over undefined PMA/PMD";
+          }
+          enum MAU-400GbaseSR16 {
+            description
+              "400GBASE-R PCS/PMA over 16-lane multimode fiber PMD";
+          }
+          enum MAU-400GbaseDR4 {
+            description
+              "400GBASE-R PCS/PMA over 4-lane single-mode fiber PMD";
+          }
+          enum MAU-400GbaseFR8 {
+            description
+              "400GBASE-R PCS/PMA over 8 WDM lane single-mode fiber PMD with reach up to at least 2 km";
+          }
+          enum MAU-400GbaseLR8 {
+            description
+              "400GBASE-R PCS/PMA over 8 WDM lane single-mode fiber PMD with reach up to at least 10 km";
+          }
+          enum MAU-400GbaseER8 {
+            description
+              "400GBASE-R PCS/PMA over 8 WDM lane single-mode fiber PMD with reach up to at least 40 km";
+          }
+          enum MAU-10baseT1L {
+            description
+              "10BASE-T1L Single balanced pair PHY";
+          }
+          enum MAU-10baseT1SHD {
+            description
+              "10BASE-T1S Single balanced pair PHY, half duplex mode";
+          }
+          enum MAU-10baseT1SMD {
+            description
+              "10BASE-T1S Single balanced pair PHY, multidrop mode";
+          }
+          enum MAU-10baseT1SFD {
+            description
+              "10BASE-T1S Single balanced pair PHY, full duplex mode";
+          }
+        }
+        config false;
+        description
+          "IEEE802.3 MAC/PHY Configuration operational MAU type of the remote device";
+      }
+      leaf pnio-rx-delay-local {
+        type int32;
+        default "0";
+        config false;
+        description
+          "PROFINET measured local receive delay in ns of the remote device";
+      }
+      leaf pnio-rx-delay-remote {
+        type int32;
+        default "0";
+        config false;
+        description
+          "PROFINET measured remote receive delay in ns of the remote device";
+      }
+      leaf pnio-tx-delay-local {
+        type int32;
+        default "0";
+        config false;
+        description
+          "PROFINET measured local transmit delay in ns of the remote device";
+      }
+      leaf pnio-tx-delay-remote {
+        type int32;
+        default "0";
+        config false;
+        description
+          "PROFINET measured remote transmit delay in ns of the remote device";
+      }
+      leaf pnio-cable-delay-local {
+        type int32;
+        default "0";
+        config false;
+        description
+          "PROFINET measured local cable delay in ns of the remote device";
+      }
+      leaf pnio-rtclass2-port-status {
+        type enumeration {
+          enum Off {
+            value 0;
+            description
+              "Port is not used or configured";
+          }
+          enum Run {
+            value 2;
+            description
+              "Port is activated for the transmission and reception of RTClass2 frames";
+          }
+        }
+        config false;
+        description
+          "PROFINET RTClass2 port status of the remote device";
+      }
+      leaf pnio-rtclass3-port-status {
+        type enumeration {
+          enum Off {
+            value 0;
+            description
+              "Port is not used or configured";
+          }
+          enum Up {
+            value 2;
+            description
+              "Port is activated for the transmission of RTClass3 frames";
+          }
+          enum Run {
+            value 4;
+            description
+              "Port is activated for the transmission and reception of RTClass3 frames";
+          }
+        }
+        config false;
+        description
+          "PROFINET RTClass3 port status of the remote device";
+      }
+      leaf pnio-rtclass3-fragmentation {
+        type enumeration {
+          enum Off {
+            description
+              "The fragmentation mode for this port is disabled";
+          }
+          enum On {
+            description
+              "The fragmentation mode for this port is enabled";
+          }
+        }
+        config false;
+        description
+          "PROFINET RTClass3 fragmentation mode of the remote device";
+      }
+      leaf pnio-rtclass3-preamble-length {
+        type enumeration {
+          enum seven {
+            description
+              "The preamble length for this port is set to seven octets";
+          }
+          enum one {
+            description
+              "The preamble length for this port is set to one octet";
+          }
+        }
+        config false;
+        description
+          "PROFINET RTClass3 preamble length of the remote device";
+      }
+      leaf pnio-rtclass3-optimized {
+        type enumeration {
+          enum Off {
+            description
+              "Optimization mode for this port is off";
+          }
+          enum On {
+            description
+              "Optimization mode for this port is on";
+          }
+        }
+        config false;
+        description
+          "PROFINET RTClass3 optimization port mode of the remote device";
+      }
+      leaf pnio-alias {
+        type string;
+        config false;
+        description
+          "PROFINET alias name of the port PortID.ChassisID of the remote device";
+      }
+      leaf pnio-mrp-uuid {
+        type string;
+        config false;
+        description
+          "PROFINET MRP UUID of the remote device";
+      }
+      leaf pnio-mrp-port-status {
+        type string;
+        config false;
+        description
+          "PROFINET MRP port status of the remote device";
+      }
+      leaf pnio-chassis-mac {
+        type string;
+        config false;
+        description
+          "PROFINET Chassis MAC address of the remote device";
+      }
+      leaf med-device-class {
+        type string;
+        config false;
+        description
+          "LLDP-MED Device class of the remote device";
+      }
+      leaf med-hardware-rev {
+        type string;
+        config false;
+        description
+          "Hardware revision of the remote device";
+      }
+      leaf med-firmware-rev {
+        type string;
+        config false;
+        description
+          "Firmware revision of the remote device";
+      }
+      leaf med-software-rev {
+        type string;
+        config false;
+        description
+          "Software revision of the remote device";
+      }
+      leaf med-serial-num {
+        type string;
+        config false;
+        description
+          "Serial number of the remote device";
+      }
+      leaf med-model-num {
+        type string;
+        config false;
+        description
+          "Model number of the remote device";
+      }
+      leaf med-manufact-name {
+        type string;
+        config false;
+        description
+          "Manufacturer name of the remote device";
+      }
+      leaf med-asset-id {
+        type string;
+        config false;
+        description
+          "Asset ID of the remote device";
+      }
+      leaf present {
+        type enumeration {
+          enum is-present {
+            value 1;
+            description
+              "LLDP Entry is added";
+          }
+          enum not-present {
+            value 0;
+            description
+              "LLDP Entry is removed";
+          }
+        }
+        default "not-present";
+        config false;
+        description
+          "If the entry is present or not";
+      }
+      leaf ipv4-mgmt-addr {
+        type string;
+        config false;
+        description
+          "Management ipv4 address if reported by the neighbour";
+      }
+      leaf ipv6-mgmt-addr {
+        type string;
+        config false;
+        description
+          "Management ipv6 address if reported by the neighbour";
+      }
+      leaf mgmt-addr-sub-type {
+        type int32;
+        default "0";
+        config false;
+        description
+          "Management address type MAC, IPV4 or IPV6";
+      }
+      list management-addresses {
+        key "address-subtype";
+        description "List of management addresses";
+        leaf address-subtype {
+          type string;
+          config false;
+          description
+            "Managment address type";
+        }
+        leaf address {
+          type string;
+          config false;
+          description
+            "Management address";
+        }
+        leaf if-subtype {
+          type string;
+          config false;
+          description
+            "Subtype for if-id";
+        }
+        leaf if-id {
+          type string;
+          config false;
+          description
+            "Interface associated with the management address";
+        }
+      }
+      leaf stoat-active {
+        type string;
+        config false;
+        description
+          "Indication that a remote device is running the STOAT discovery daemon";
+      }
+      leaf aggreg-support {
+        type string;
+        config false;
+        description
+          "Indication that port aggregation is supported";
+
+      }
+      leaf aggreg-enabled {
+        type string;
+        config false;
+        description
+          "Aggregator enabled for the port";
+      }
+      leaf aggreg-id {
+        type string;
+        config false;
+        description
+          "Aggregator id for the port";
+      }
+      leaf timestamp {
+        type string;
+        config false;
+        description
+          "The time when this entry will age out";
+      }
+    }
+  }
+}
