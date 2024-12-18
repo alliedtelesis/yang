@@ -1,5 +1,16 @@
 # Yang data models release notes
 
+## 5.5.4-1
+
+## New models
+
+    N/A
+
+## Modified models
+
+    at-interface.yang
+      at-interface@2024-01-30.yang -> at-interface@2024-03-13.yang
+
 ## 5.5.4
 
 ### New models
