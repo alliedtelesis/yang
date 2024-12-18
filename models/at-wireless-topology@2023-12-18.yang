@@ -1,0 +1,81 @@
+module at-wireless-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-wireless-topology";
+  prefix at-wlt;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to IEEE 802.11 topology.";
+
+  revision "2023-12-18" {
+      description "Initial revision";
+  }
+
+  grouping wireless-link-attributes {
+    container wireless-link-attributes {
+      leaf ssid {
+        type string;
+        description
+          "802.11 SSID";
+      }
+      leaf channel {
+        type uint16;
+        description
+          "802.11 channel";
+      }
+      leaf rssi {
+        type int16;
+        units "dBm";
+        description
+          "Received Signal Strength Indicator";
+      }
+      leaf rx-rate {
+        type uint64;
+        units "Mbps";
+        description
+          "Receive data rate";
+      }
+      leaf tx-rate {
+        type uint64;
+        units "Mbps";
+        description
+          "Transmit data rate";
+      }
+    }
+  }
+
+  grouping wireless-network-type {
+    description
+      "Indicates the topology type to be 802.11.";
+    container wireless-topology {
+      presence "Indicates 802.11 Network Topology.";
+      description
+        "The presence of the container node indicates 802.11 Network Topology.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses wireless-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nt:link" {
+    when '/nw:networks/nw:network/nw:network-types/at-wlt:wireless-topology' {
+      description
+        "Augmentation parameters apply only for networks with 802.11 topology.";
+    }
+    uses wireless-link-attributes;
+  }
+}

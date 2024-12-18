@@ -1,0 +1,54 @@
+module at-ietf-interfaces-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-ietf-interfaces-deviation";
+  prefix at-if;
+
+  import ietf-interfaces {
+    prefix if;
+  }
+
+  organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the ietf-interfaces module.";
+
+  revision 2024-02-14 {
+    description
+      "Remove not-supported for interfaces-state";
+  }
+  revision 2023-07-10 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  deviation "/if:interfaces/if:interface/if:type" {
+    deviate replace {
+      config false;
+    }
+  }
+  deviation "/if:interfaces/if:interface/if:enabled" {
+    deviate replace {
+      type boolean;
+      default "true";
+    }
+    description
+      "This leaf contains the configured, desired state of the
+       interface.
+
+       Systems that implement the IF-MIB use the value of this
+       leaf in the intended configuration to set
+       IF-MIB.ifAdminStatus to 'up' or 'down' after an ifEntry
+       has been initialized, as described in RFC 2863.
+
+       Changes in this leaf in the intended configuration are
+       reflected in ifAdminStatus. Changes in ifAdminStatus by
+       other means are reflected in this leaf.";
+  }
+}

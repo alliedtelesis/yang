@@ -1,5 +1,30 @@
 # Yang data models release notes
 
+## 5.5.4
+
+### New models
+
+#### Allied Telesis models
+
+    at-openconfig-if-ethernet-deviation.yang
+    at-openconfig-interfaces-deviation.yang
+    at-wireless-topology.yang
+
+#### Standard models
+
+    openconfig-if-ethernet.yang
+    openconfig-interfaces.yang
+
+#### Modified models
+
+    at-ietf-interfaces-deviation.yang
+      at-ietf-interfaces-deviation@2023-07-10.yang -> at-ietf-interfaces-deviation@2024-02-14.yang
+    at-interface.yang
+      at-interface@2019-12-01.yang -> at-interface@2024-01-30.yang
+    ietf-interfaces.yang
+      ietf-interfaces@2018-02-20.yang -> ietf-interfaces@2014-05-08.yang
+      (Note this is a change to an earlier version of this model)
+
 ## 5.5.3-2
 
 ### New models
