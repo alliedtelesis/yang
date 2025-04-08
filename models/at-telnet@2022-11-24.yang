@@ -1,0 +1,50 @@
+module at-telnet {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-telnet";
+  prefix at-telnet;
+
+  organization "Allied Telesis Labs New Zealand";
+  contact "Allied Telesis Customer Support Group";
+  description "This document defines a YANG module for Telnet";
+
+  revision 2022-11-24 {
+    description "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container telnet {
+    description "Telnet server";
+    container server {
+      description "Telnet server configuration";
+      leaf mode {
+        type enumeration {
+          enum none {
+            description "Disable Telnet server";
+          }
+          enum ipv4 {
+            description "Enable IPv4 Telnet Server";
+          }
+          enum ipv6 {
+            description "Enable IPv6 Telnet Server";
+          }
+          enum all {
+            description "Enable IPv4/IPv6 Telnet server";
+          }
+        }
+        default "none";
+        description "Telnet server mode";
+      }
+      leaf port {
+        type uint16 {
+            range "1..65535";
+        }
+        default 23;
+        description "Telnet server listen port";
+      }
+    }
+  }
+}

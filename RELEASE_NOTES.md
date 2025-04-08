@@ -1,5 +1,25 @@
 # Yang data models release notes
 
+## 5.5.5-0
+
+### New models
+
+#### Allied Telesis models
+
+    at-mac-authentication@2025-02-05.yang
+    at-telnet@2022-11-24.yang
+
+#### Standard models
+
+    N/A
+
+### Modified models
+
+    at-bridges.yang
+     at-bridges@2023-12-04.yang -> at-bridges@2025-02-26.yang
+    at-interface.yang
+     at-interface@2024-07-19.yang -> at-interface@2025-01-13.yang
+
 ## 5.5.4-2
 
 ### New models

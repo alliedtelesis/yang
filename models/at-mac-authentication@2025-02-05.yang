@@ -1,0 +1,145 @@
+module at-mac-authentication {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-mac-authentication";
+  prefix at-mac-auth;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for the MAC Authentication API";
+
+  revision 2025-02-05 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  typedef username-format {
+    type enumeration {
+      enum hypen-separated-upper {
+        value 0;
+        description "MAC address formatted as XX-XX-XX-XX-XX-XX";
+      }
+      enum hypen-separated-lower {
+        value 1;
+        description "MAC address formatted as xx-xx-xx-xx-xx-xx";
+      }
+      enum colon-separated-upper {
+        value 2;
+        description "MAC address formatted as XX:XX:XX:XX:XX:XX";
+      }
+      enum colon-separated-lower {
+        value 3;
+        description "MAC address formatted as xx:xx:xx:xx:xx:xx";
+      }
+      enum dot-separated-upper {
+        value 4;
+        description "MAC address formatted as XXXX.XXXX.XXXX";
+      }
+      enum dot-separated-lower {
+        value 5;
+        description "MAC address formatted as xxxx.xxxx.xxxx";
+      }
+      enum not-separated-upper {
+        value 6;
+        description "MAC address formatted as XXXXXXXXXXXX";
+      }
+      enum not-separated-lower {
+        value 7;
+        description "MAC address formatted as xxxxxxxxxxxx";
+      }
+    }
+    description "Username format option";
+  }
+
+  typedef mac-authentication-status {
+    type enumeration {
+      enum failed {
+        value -1;
+        description "MAC Auth failed for this supplicant.";
+      }
+      enum pending {
+        value 0;
+        description "MAC Auth in progress for this supplicant.";
+      }
+      enum authenticated {
+        value 1;
+        description "MAC Auth succeeded for this supplicant.";
+      }
+    }
+  }
+
+  container mac-authentication {
+    description "Data model for MAC Authentication ports";
+    container settings {
+      description "Configuration of MAC Authentication ports";
+
+      list interfaces {
+        key "ifname";
+        description "Download Portal HTTPS listen addreses";
+
+        leaf ifname {
+          type string;
+          mandatory true;
+          description "MAC Authentication settings for this interface";
+        }
+        leaf enable {
+          type boolean;
+          mandatory true;
+          description "MAC Authentication enabled";
+        }
+        leaf username-format {
+          type username-format;
+          mandatory false;
+          description "Username and password format to use";
+        }
+        leaf nas-id {
+          type string;
+          mandatory false;
+          description "NAS Indentifier to use for supplicants on this interface";
+        }
+        leaf authentication-list {
+          type string;
+          mandatory false;
+          description "Specific authentication list for this interface.";
+        }
+      }
+    } // End of container settings
+
+    container state {
+      config false;
+      description "State of MAC Authentication";
+
+      list interfaces {
+        description "State of MAC Authentication for interface";
+        key "ifname";
+
+        leaf ifname {
+          type string;
+          mandatory true;
+          description "MAC Authentication settings for this interface";
+        }
+        list supplicants {
+          description "MAC Authentication supplicants on this interface";
+          key "mac-address";
+          leaf mac-address {
+            type string;
+            mandatory true;
+          }
+          leaf status {
+            type mac-authentication-status;
+            mandatory true;
+          }
+        }
+      } // End of list interfaces
+    } // End of container state
+  } // End of container mac-authentication
+} // End of module at-mac-authenticationmac-authentication
