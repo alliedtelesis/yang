@@ -1,5 +1,22 @@
 # Yang data models release notes
 
+## 5.5.5-1
+
+### New models
+
+#### Allied Telesis models
+
+    at-applications@2025-12-06.yang
+    at-firmware-notify@2025-05-15.yang
+
+#### Standard models
+
+    N/A
+
+### Modified models
+
+    N/A
+
 ## 5.5.5-0
 
 ### New models

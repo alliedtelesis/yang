@@ -1,0 +1,101 @@
+module at-applications {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-applications";
+  prefix at-applications;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for Applications";
+
+  revision 2025-12-06 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  list applications {
+    key "name";
+    description "List of applications";
+    leaf name {
+      type string {
+        pattern '[a-zA-Z0-9_\\-]{1,64}';
+      }
+      description "Application name";
+    }
+    leaf protocol {
+      type uint8 {
+        range '0..255';
+      }
+      description "Protocol number in range 0 to 255";
+    }
+    leaf-list sports {
+      type string {
+        pattern '([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])';
+      }
+      description "List of source port ranges. e.g. 111-222 or 52-52. Note: Maximum number of sports is 15 with a single port counting as 1 and a range counting as 2";
+    }
+    leaf-list dports {
+      type string {
+        pattern '([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])-([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])';
+      }
+      description "List of destination port ranges. e.g. 111-222 or 52-52. Note: Maximum number of dports is 15 with a single port counting as 1 and a range counting as 2";
+    }
+    leaf dscp {
+      type uint8 {
+        range '0..63';
+      }
+      description "DSCP values in range 0 to 63 e.g. 11 or 11 12 23 - integer";
+    }
+    leaf icmp-type {
+      type uint32 {
+        range '0..255|2147483647';
+      }
+      description "ICMP type in range 0 to 255, or 2147483647 for any";
+    }
+    leaf icmp-code {
+      type uint32 {
+        range '0..255|2147483647';
+      }
+      description "ICMP code in range 0 to 255, or 2147483647 for any";
+    }
+    leaf custom {
+      type enumeration {
+        enum predefined {
+          value 0;
+          description "Predefined or DPI based application";
+        }
+        enum custom {
+          value 1;
+          description "Custom (user-defined) application";
+        }
+      }
+      default "predefined";
+      description "Flag with value 1 to indicate application is user-created (custom)";
+    }
+    leaf-list hostname {
+      type string {
+        pattern '[a-zA-Z0-9-\.]{0,253}';
+      }
+      description "List of hostnames";
+    }
+    leaf mark {
+      type string;
+      config false;
+      description "DPI protocol number";
+    }
+    leaf description {
+      type string;
+      config false;
+      description "Detailed description of the application";
+    }
+  }
+}
