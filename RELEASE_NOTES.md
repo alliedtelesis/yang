@@ -1,5 +1,28 @@
 # Yang data models release notes
 
+## 5.5.5-2
+
+### New models
+
+#### Allied Telesis models
+
+    at-ietf-hardware-deviation@2025-09-24.yang
+    at-log@2025-03-29.yang
+    at-pcap@2025-08-08.yang
+    at-pfc@2025-08-08.yang
+    at-qos-egress-mem-mgmt@2025-08-15.yang
+
+#### Standard models
+
+    ietf-hardware@2018-03-13.yang
+
+### Modified models
+
+    at-entity.yang
+     at-entity@2024-09-27.yang -> at-entity@2025-10-17.yang
+    at-interface.yang
+     at-interface@2025-01-13.yang -> at-interface@2025-05-15.yang
+
 ## 5.5.5-1
 
 ### New models

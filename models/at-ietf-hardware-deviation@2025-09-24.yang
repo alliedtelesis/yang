@@ -1,0 +1,93 @@
+module at-ietf-hardware-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-ietf-hardware-deviation";
+  prefix at-ietf-hw-dev;
+
+  import ietf-hardware {
+    prefix hw;
+  }
+
+   organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the ietf-hardware module.";
+
+  revision 2025-09-24 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  deviation "/hw:hardware/hw:last-change" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:physical-index" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:parent" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:parent-rel-pos" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:contains-child" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:hardware-rev" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:firmware-rev" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:software-rev" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:serial-num" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:mfg-name" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:model-name" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:alias" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:asset-id" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:is-fru" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:mfg-date" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:uuid" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:sensor-data" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:uri" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:state/hw:state-last-changed" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:state/hw:usage-state" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:state/hw:alarm-state" {
+    deviate not-supported;
+  }
+  deviation "/hw:hardware/hw:component/hw:state/hw:standby-state" {
+    deviate not-supported;
+  }
+}

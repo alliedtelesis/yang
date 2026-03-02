@@ -1,0 +1,98 @@
+module at-pcap {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-pcap";
+  prefix at-pcap;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for
+    the packet capture module";
+
+  revision 2025-08-08 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container packet-capture {
+    description "Packet capture";
+
+    container config {
+      description "Global configuration";
+
+      list captures {
+        key "filename";
+        description "Configuration of the packet captures, any change will overwrite/restart a capture";
+
+        leaf filename {
+          type string {
+            pattern '^[a-zA-Z0-9_-]{1,245}\.pcap$';
+          }
+          mandatory true;
+          description "Filename of the packet capture";
+        }
+
+        leaf interface {
+          type string {
+            pattern '[a-z][a-z0-9.]+';
+          }
+          mandatory true;
+          description "Interface of the packet capture";
+        }
+
+        leaf duration {
+          type uint32 {
+            range "1..3600";
+          }
+          mandatory true;
+          description "Duration up to an hour in seconds of the packet capture";
+        }
+      }
+    }
+
+    container state {
+      config false;
+      description "Global state";
+
+      list captures {
+        key "filename";
+        description "State of the packet captures";
+
+        leaf filename {
+          type string {
+            pattern '^[a-zA-Z0-9_-]{1,245}\.pcap$';
+          }
+          description "Filename of the packet capture";
+        }
+
+        leaf start-time {
+          type yang:date-and-time;
+          description "Timestamp of when the packet capture started";
+        }
+
+        leaf end-time {
+          type yang:date-and-time;
+          description "Timestamp of when the packet capture stopped";
+        }
+
+        leaf error {
+          type string;
+          description "Description of an error that has occured";
+        }
+      }
+    }
+  }
+}

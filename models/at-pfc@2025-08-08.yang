@@ -1,0 +1,117 @@
+module at-pfc {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-pfc";
+  prefix "pfc";
+
+  import openconfig-if-ethernet { prefix oc-eth; }
+  import openconfig-interfaces { prefix oc-if; }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines configuration and state data for
+    Priority Flow Control (PFC) based on the IEEE 802.1Qbb
+    standard.";
+
+  revision "2025-08-08" {
+    description
+      "Initial revision.";
+    reference "0.1.1";
+  }
+
+  feature PFC {
+    description
+      "Enables PFC support as defined in IEEE 802.1Qbb.";
+    reference
+      "IEEE 802.1Qbb";
+  }
+
+  // grouping statements
+
+  grouping pfc-config {
+    description
+      "PFC global config grouping";
+
+    leaf enable {
+      type boolean;
+      default false;
+      description
+        "Enable or Disable PFC";
+    }
+  }
+
+  grouping pfc-if-config {
+    description
+      "PFC interface config grouping";
+
+    container priority-flow-control {
+      if-feature "PFC";
+      description
+        "PFC interface parameters";
+
+      leaf mode {
+        type enumeration {
+          enum ON {
+            description "Enable PFC on an interface";
+          }
+          enum OFF {
+            description "Disable PFC on an interface";
+          }
+          enum AUTO {
+            description "Auto-negotiate PFC state with peer via DCBX protocol";
+          }
+        }
+        default "AUTO";
+        description
+          "Enable/Disable/Auto-negotiate PFC operational state on the interface";
+      }
+
+      leaf-list priorities {
+        type uint8 {
+            range 0..7;
+        }
+        description
+          "Traffic class priority list";
+      }
+    }
+  }
+
+  // data definition statements
+
+  container priority-flow-control {
+    if-feature "PFC";
+    description
+      "PFC parameters";
+
+    container config {
+      description
+        "Configuration data for PFC";
+      uses pfc-config;
+    }
+
+    container state {
+      config false;
+      description
+        "State variables for PFC";
+      uses pfc-config;
+    }
+  }
+
+  // augment statements
+
+  augment "/oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config" {
+    description
+      "Apply IEEE 802.1Qbb PFC interface parameters";
+    uses pfc-if-config;
+  }
+
+  augment "/oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state" {
+    description
+      "IEEE 802.1Qbb PFC interface parameters";
+    uses pfc-if-config;
+  }
+}

@@ -1,0 +1,488 @@
+module at-log {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-syslog";
+  prefix at-log;
+
+  import ietf-inet-types {
+      prefix inet;
+  }
+
+  organization "Allied Telesis Labs New Zealand";
+  contact "Allied Telesis Customer Support Group";
+  description "This document defines a YANG module for Syslog";
+
+  revision 2025-03-29 {
+    description "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  typedef yes-no {
+    type enumeration {
+      enum no {
+        value 0;
+        description "No / disabled / false";
+      }
+      enum yes {
+        value 1;
+        description "Yes / enabled / true";
+      }
+    }
+    description "A simple yes or no value";
+  }
+
+  grouping log-filter {
+    description "Log Filter";
+    list filters {
+      key "id";
+      description "List of inclusion/exclusion filters. A message will be included in the log if it matches at least one inclusion filter and does not match any exclusion filter. Each filter may specify one or more conditions. A message matches a filter if it matches all of the specified conditions for that filter.";
+      leaf id {
+        type uint32 {
+          range '1..250';
+        }
+        description "Filter ID";
+      }
+      leaf level {
+        type enumeration {
+          enum emergencies {
+            value 0;
+            description "System is unusable";
+          }
+          enum alerts {
+            value 1;
+            description "Action must be taken immediately";
+          }
+          enum critical {
+            value 2;
+            description "Critical conditions";
+          }
+          enum errors {
+            value 3;
+            description "Error conditions";
+          }
+          enum warnings {
+            value 4;
+            description "Warning conditions";
+          }
+          enum notices {
+            value 5;
+            description "Normal but significant conditions";
+          }
+          enum informational {
+            value 6;
+            description "Informational messages";
+          }
+          enum debugging {
+            value 7;
+            description "Debug-level messages";
+          }
+        }
+        description "Minimum severity of message to accept";
+      }
+      leaf program {
+        type string {
+          pattern '^.{1,10}$';
+        }
+        description "Select messages from a specific program, with 'program' as it would appear in a log message (eg. IMISH)";
+      }
+      leaf facility {
+        type enumeration {
+          enum auth {
+            description "Security/authorization messages";
+          }
+          enum authpriv {
+            description "Security/authorization messages (private)";
+          }
+          enum cron {
+            description "Clock daemon";
+          }
+          enum daemon {
+            description "System daemons";
+          }
+          enum ftp {
+            description "FTP daemon";
+          }
+          enum kern {
+            description "Kernel messages";
+          }
+          enum local5 {
+            description "UTM feature messages";
+          }
+          enum lpr {
+            description "Line printer subsystem";
+          }
+          enum mail {
+            description "Mail system";
+          }
+          enum news {
+            description "Network news subsystem";
+          }
+          enum syslog {
+            description "Messages generated internally by syslogd";
+          }
+          enum user {
+            description "User-level messages";
+          }
+          enum uucp {
+            description "UUCP subsystem";
+          }
+        }
+        description "Syslog facility";
+      }
+      leaf msg-text {
+        type string;
+        description "Select messages containing a certain text string";
+      }
+      leaf mode {
+        type enumeration {
+          enum include {
+            value 0;
+            description "Include filtered messages";
+          }
+          enum exclude {
+            value 1;
+            description "Exclude filtered messages";
+          }
+        }
+        description "Set the filter to include or exclude results";
+      }
+    }
+  }
+
+  container log {
+    description "Log information";
+    container messages {
+      config false;
+      description "View log messages, Messages are delimited by a carriage return. Each message is made up of the following fields: [date][time][facility][severity][program[pid]][message text]";
+      container buffered {
+        description "Messages in buffered log.";
+        leaf all {
+          type string;
+          description "All messages in buffered log.";
+        }
+        leaf tail {
+          type string;
+          description "Last 50 messages in buffered log.";
+        }
+      }
+      container permanent {
+        description "Messages in permanent log.";
+        leaf all {
+          type string;
+          description "All messages in permanent log.";
+        }
+        leaf tail {
+          type string;
+          description "Last 50 messages in permanent log.";
+        }
+      }
+    }
+    container settings {
+      description "Configure log settings";
+      leaf date-format {
+        type enumeration {
+          enum default {
+            description "The default date format: YYYY MMM DD HH:MM:SS";
+          }
+          enum iso {
+            description "ISO date format: YYYY-MM-DDThh:mm:ssTZD";
+          }
+        }
+        default default;
+        description "The log message date and time format configuration.";
+      }
+      container size {
+        description "Configure log file size";
+        leaf buffered {
+          type uint32 {
+            range '50..250';
+          }
+          default 50;
+          description "filesize of the buffered log in kilobytes";
+        }
+        leaf permanent {
+          type uint32 {
+            range '50..250';
+          }
+          default 50;
+          description "filesize of the permanent log in kilobytes";
+        }
+        leaf external {
+          type uint32 {
+            range '50..4194304';
+          }
+          default 50;
+          config false;
+          description "filesize of the external log in kilobytes";
+        }
+      }
+      container maxsize {
+        config false;
+        description "Configure log file maximum size";
+        leaf buffered {
+          type uint32;
+          default 250;
+          description "maximum filesize of the buffered log in kilobytes";
+        }
+        leaf permanent {
+          type uint32;
+          default 250;
+          description "maximum filesize of the permanent log in kilobytes";
+        }
+      }
+      container defaultsize {
+        config false;
+        description "Configure log file default size";
+        leaf buffered {
+          type uint32;
+          default 50;
+          description "default filesize of the buffered log in kilobytes";
+        }
+        leaf permanent {
+          type uint32;
+          default 50;
+          description "default filesize of the permanent log in kilobytes";
+        }
+      }
+      container rotate {
+        config false;
+        description "Configure a number of rotate for log files";
+        leaf buffered {
+          type uint32 {
+            range '0..255';
+          }
+          default 4;
+          description "The number of rotate for the buffered log";
+        }
+        leaf permanent {
+          type uint32 {
+            range '0..255';
+          }
+          default 4;
+          description "The number of rotate for the permanent log";
+        }
+        leaf external {
+          type uint32 {
+            range '0..255';
+          }
+          default 1;
+          description "The number of rotate for the external log";
+        }
+      }
+      container host {
+        description "Host configuration.";
+        leaf source {
+          type union {
+            type inet:ipv4-address;
+            type inet:ipv6-address;
+            type string;
+          }
+          description "The source address with which to send syslog packets";
+        }
+        container startup-delay {
+          description "Configurable delay for startup messages sent to host destinations";
+          leaf messages {
+            type uint32 {
+              range '1..5000';
+            }
+            default 2000;
+            description "The number of messages to be buffered";
+          }
+          leaf delay {
+            type uint32 {
+              range '1..600';
+            }
+            default 120;
+            description "Seconds to wait before sending startup messages";
+          }
+        }
+      }
+    }
+    container destinations {
+      description "Configure logging destinations";
+      container console {
+        description "Broadcast log messages to all terminal sessions";
+        leaf enabled {
+          type yes-no;
+          description "Console log status";
+        }
+        uses log-filter {
+          refine filters/level {
+            default "critical";
+          }
+        }
+      }
+      container buffered {
+        description "Log target 'buffered' specific configuration";
+        leaf enabled {
+          type yes-no;
+          description "Buffered log status";
+        }
+        uses log-filter {
+          refine filters/level {
+            default "notices";
+          }
+        }
+      }
+      container permanent {
+        description "Log target 'permanent' specific configuration";
+        leaf enabled {
+          type yes-no;
+          description "Permanent log status";
+        }
+        uses log-filter {
+          refine filters/level {
+            default "warnings";
+          }
+        }
+      }
+      container monitor {
+        description "Receive log messages on a single monitor session or a set of sessions";
+        list lines {
+          key "name";
+          config false;
+          description "Set of monitor sessions to receive messages";
+          leaf name {
+            type string;
+            description "The line name (e.g. ttyS0)";
+          }
+          leaf device {
+            type string;
+            description "The line device (e.g. /dev/ttyS0)";
+          }
+        }
+        uses log-filter {
+          refine filters/level {
+            default "debugging";
+          }
+        }
+      }
+      list email {
+        key "email-address";
+        description "Log target 'email' specific information, the default state of the email configuration is no configuration";
+        leaf email-address {
+          type string;
+          description "The email address to send log messages to";
+        }
+        container time-zone {
+          description "Time zone configuration";
+          leaf offset-type {
+            type enumeration {
+              enum utc {
+                description "Time-zone offset is from UTC";
+              }
+              enum local {
+                description "Time-zone offset is from local-time";
+              }
+            }
+            default local;
+            description "local: offset from local time, utc: offset from utc time";
+          }
+          leaf offset {
+            type int32 {
+              range '-24..24';
+            }
+            default 0;
+            description "Time-zone offset in hours, negative if the recipient is behind (west), or positive if the recipient is ahead (east) of local time.";
+          }
+        }
+        uses log-filter;
+      }
+      list host {
+        key "address";
+        description "Log target 'host' specific information, the default state of the host configuration is no configuration";
+        leaf address {
+          type inet:ip-address;
+          description "The IP address to send log messages to";
+        }
+        leaf port {
+          type uint16 {
+            range '1..65535';
+          }
+          description "The destination port number to send log message to";
+        }
+        leaf transport {
+          type string {
+            pattern '^(udp|tcp)$';
+          }
+          description "The transport mode to send log messages to";
+        }
+        leaf vrf {
+          type string;
+          config false;
+          description "VRF Instance name";
+        }
+        leaf vrf-id {
+          type string;
+          config false;
+          description "VRF Instance ID";
+        }
+        leaf secure {
+          type yes-no;
+          description "Use a secure transport to deliver messages to the host";
+        }
+        container time-zone {
+          description "Adjust log message time-stamps for recipients in other time-zones";
+          leaf offset-type {
+            type enumeration {
+              enum utc {
+                description "Time-zone offset is from UTC";
+              }
+              enum local {
+                description "Time-zone offset is from local-time";
+              }
+            }
+            default "local";
+            description "local: offset from local time, utc: offset from utc time";
+          }
+          leaf offset {
+            type int32 {
+              range '-24..24';
+            }
+            default 0;
+            description "Time-zone offset in hours, negative if the recipient is behind (west), or positive if the recipient is ahead (east) of local time.";
+          }
+        }
+        leaf owner {
+          type enumeration {
+            enum user {
+              description "Created by user";
+            }
+          }
+          default "user";
+          description "Who created this log host?";
+        }
+        uses log-filter;
+      }
+      list event {
+        key "address";
+        description "Configure a host to recieve event notifications";
+        leaf address {
+          type inet:ip-address;
+          description "The IP address to send log messages to";
+        }
+      }
+      container external {
+        description "Log target 'external' specific configuration";
+        leaf enabled {
+          type yes-no;
+          description "External log status";
+        }
+        leaf filename {
+          type string {
+            pattern '^(card|usb):/[\.a-zA-Z0-9_/-]{1,250}$';
+          }
+          description "The destination file on external-media for logging";
+        }
+        uses log-filter {
+          refine filters/level {
+            default "notices";
+          }
+        }
+      }
+    }
+  }
+}

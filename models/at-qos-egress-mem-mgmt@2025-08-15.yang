@@ -1,0 +1,76 @@
+module at-qos-egress-mem-mgmt {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-qos-egress-mem-mgmt";
+  prefix "qos-egress-mem-mgmt";
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines configuration and state data related to
+    egress queue memory management feature of QoS.";
+
+  revision "2025-08-15" {
+    description
+      "Initial revision.";
+  }
+
+  feature QOS {
+    description
+      "Enables QOS feature.";
+  }
+
+  // grouping statements
+
+  grouping qos-egress-mem-mgmt-config {
+    description
+      "QOS egress queue memory management config grouping";
+
+    container lossless {
+      description
+      "QOS egress queue memory lossless mode config";
+
+      leaf enable {
+        type boolean;
+        default false;
+        description
+          "Enable lossless egress pool mode";
+      }
+
+      leaf-list priorities {
+        type uint8 {
+            range 0..7;
+        }
+        description
+          "Traffic class priority list";
+      }
+    }
+  }
+
+  // data definition statements
+
+  container qos-egress-mem-mgmt {
+    if-feature "QOS";
+    description
+      "QOS egress queue memory management configuration and state data";
+
+    container config {
+      description
+        "Configuration data";
+
+      uses qos-egress-mem-mgmt-config;
+    }
+
+    container state {
+      config false;
+
+      description
+        "Operational state data";
+
+      uses qos-egress-mem-mgmt-config;
+    }
+  }
+}
