@@ -1,5 +1,28 @@
 # Yang data models release notes
 
+## 5.5.6
+
+### New models
+
+#### Allied Telesis models
+
+    at-flow@2024-01-16.yang
+    at-process-monitor@2025-01-22.yang
+
+#### Standard models
+
+    ietf-restconf-monitoring@2017-01-26.yang
+    ietf-yang-library@2019-01-04.yang
+
+### Modified models
+
+    at-qos-egress-mem-mgmt.yang
+     at-qos-egress-mem-mgmt@2025-08-15.yang -> at-qos-egress-mem-mgmt@2026-02-04.yang
+    at-system.yang
+     at-system@2024-08-22.yang -> at-system@2026-02-03.yang
+    ieee802-dot1q-types.yang
+     ieee802-dot1q-types@2020-06-04.yang -> ieee802-dot1q-types@2023-10-26.yang
+
 ## 5.5.5-2
 
 ### New models

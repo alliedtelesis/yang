@@ -1,0 +1,155 @@
+module at-process-monitor {
+  yang-version 1.1;
+  namespace "http://alliedtelesis.com/ns/yang/at-process-monitor";
+  prefix at-pm;
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This document defines a YANG module for
+    the process monitor module";
+
+  revision 2025-01-22 {
+    description
+      "Remove io read/write leafs to support simultaneous users.
+       Clients can compute read/write by averaging total read/write";
+    reference "2025-01-22";
+  }
+  revision 2025-01-07 {
+    description
+      "Add cmdline leaf to processes.";
+    reference "2025-01-07";
+  }
+  revision 2020-05-19 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
+  container process-monitor {
+    description "Process monitor";
+
+    list recordings {
+      key "filename";
+      description "Active recordings of process information to file";
+
+      leaf filename {
+        type string;
+        description "Filename to save recorded data to";
+      }
+
+      leaf interval {
+        type uint32;
+        default 5;
+        description "Sample interval in seconds";
+      }
+
+      leaf max {
+        type uint32;
+        default 1000;
+        description "Maximum Number of samples to record";
+      }
+
+      leaf size {
+        type uint64;
+        config false;
+        description "Current size of the destination file";
+      }
+    }
+
+    list processes {
+      key "pid";
+      config false;
+      description "List of processes";
+
+      leaf pid {
+        type uint64;
+        description "Process identifier";
+      }
+
+      leaf name {
+        type string;
+        description "Process name";
+      }
+
+      leaf cmdline {
+        type string;
+        description "Process command line";
+      }
+
+      leaf ppid {
+        type uint64;
+        description "Parent process identifier";
+      }
+
+      leaf cgroup {
+        type string;
+        description "CGroup that the process belongs to";
+      }
+
+      container memory {
+        description "Process memory information";
+
+        leaf size {
+          type uint64;
+          description "VmSize: Total Memory Size (bytes)";
+        }
+
+        leaf resident {
+          type uint64;
+          description "VmRSS: Actual RAM Used (bytes)";
+        }
+
+        leaf shared {
+          type uint64;
+          description "Shared Memory Size (bytes)";
+        }
+
+        leaf data {
+          type uint64;
+          description "Programs Data Memory Usage (bytes)";
+        }
+      }
+
+      container cpu {
+        description "Process CPU information";
+        
+        leaf user {
+          type uint64;
+          description "utime: CPU time spent in user code (clock ticks)";
+        }
+
+        leaf system {
+          type uint64;
+          description "stime: CPU time spent in kernel code (clock ticks)";
+        }
+      }
+
+      container io {
+        description "Process IO information";
+
+        container total {
+          description "Process IO totals";
+
+          leaf read {
+            type uint64;
+            description "read_bytes: number of bytes read from storage layer";
+          }
+
+          leaf write {
+            type uint64;
+            description "write_bytes: number of bytes written to storage layer";
+          }
+        }
+      }
+    }
+  }
+}

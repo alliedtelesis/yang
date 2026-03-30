@@ -1,0 +1,506 @@
+module at-flow {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-flow";
+  prefix flow;
+
+  import ietf-inet-types {
+      prefix inet;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions for Flow database support.";
+
+  revision "2024-01-16" {
+    description "Initial revision";
+  }
+
+  container flow {
+    description
+      "Flow database configuration commands";
+
+    container settings {
+      description
+        "Flow database settings";
+
+      leaf enable {
+        description
+          "Enable Flow database monitoring";
+        type boolean;
+        default false;
+      }
+
+      list record {
+        description
+          "Flow record configuration";
+        key "name";
+        leaf name {
+          type string {
+            pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+          }
+        }
+
+        container match {
+          description
+            "Specify a key field";
+
+          container ip {
+            description
+              "IP fields";
+
+            leaf version {
+              description
+                "Indicates the IP version";
+              type enumeration {
+                enum "v4";
+                enum "v6";
+              }
+              default "v4";
+            }
+
+            leaf dscp {
+              description
+                "Differentiated Services Code Point field";
+              type boolean;
+            }
+
+            leaf protocol {
+              description
+                "IPv4 Next level protocol field";
+              type boolean;
+            }
+
+            leaf source-address {
+              description
+                "Source address";
+              type boolean;
+            }
+
+            leaf destination-address {
+              description
+                "Destination address";
+              type boolean;
+            }
+          }
+
+          container transport {
+            description
+              "Transport fields";
+
+            leaf source-port {
+              description
+                "Source port";
+              type boolean;
+            }
+
+            leaf destination-port {
+              description
+                "Destination port";
+              type boolean;
+            }
+          }
+
+          container layer2 {
+            description
+              "Layer2 fields";
+
+            leaf ethertype {
+              description
+                "The ethertype of the packet";
+              type boolean;
+            }
+
+            container dot1q {
+              description
+                "dot1q fields";
+              leaf priority {
+                description
+                  "The CoS field in the dot1q header";
+                type boolean;
+              }
+
+              leaf vlan {
+                description
+                  "The vlan the packet is on";
+                type boolean;
+              }
+            }
+
+            container mac {
+              description
+                "MAC fields";
+              leaf destination-address {
+                description
+                  "Destination MAC fields";
+                type boolean;
+              }
+
+              leaf source-address {
+                description
+                  "Source MAC fields";
+                type boolean;
+              }
+            }
+          }
+
+          leaf direction {
+            description
+              "Match packets on ingress/egress traffic";
+            type enumeration {
+              enum ingress;
+              enum egress;
+            }
+          }
+
+          leaf dscp {
+            description
+              "DSCP";
+            type boolean;
+          }
+        }
+      }
+
+      list exporter {
+        description
+          "Flow exporter configuration";
+        key "name";
+        leaf name {
+          type string {
+            pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+          }
+        }
+
+        leaf description {
+          description
+            "Provide a description for this flow exporter";
+          type string {
+            pattern '[a-zA-Z0-9\-_]{1,200}';
+          }
+        }
+
+        leaf type {
+          description
+            "Exporter type";
+          type enumeration {
+            enum "ipfix";
+          }
+        }
+
+        leaf source {
+          description
+            "Input source for the flow exporter";
+          type enumeration {
+            enum "interface";
+            enum "hardware";
+          }
+          default "hardware";
+        }
+
+        list interfaces {
+          description
+            "Interface source";
+          key "name";
+          leaf name {
+            type string;
+          }
+        }
+
+        leaf address {
+          description
+            "Export destination configuration";
+          type inet:host;
+        }
+
+        container transport {
+          description
+            "Transport protocol type";
+
+          leaf type {
+            description
+              "Indicates the transport type";
+            type enumeration {
+              enum "udp";
+              enum "tcp";
+            }
+            default "tcp";
+          }
+
+          leaf port {
+            description
+              "Port";
+            type uint16 {
+              range "1..65535";
+            }
+            default 4739;
+          }
+        }
+
+        container cache {
+          description
+            "Exporter Cache configuration";
+          leaf max_flows {
+            description
+              "Export max flows per second";
+            type uint16 {
+              range "1..65535";
+            }
+          }
+
+          leaf size {
+            description
+              "Cache size";
+            type uint16 {
+              range "4..30";
+            }
+          }
+
+          leaf active-timeout {
+            description
+              "Active timeout in seconds";
+            type uint16 {
+              range "1..65535";
+            }
+          }
+
+          leaf inactive-timeout {
+            description
+              "Inactive timeout in seconds";
+            type uint16 {
+              range "1..65535";
+            }
+          }
+        }
+      }
+
+      list sampling {
+        description
+          "Flow sampling configuration";
+        key "name";
+        leaf name {
+          type string {
+            pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+          }
+        }
+
+        leaf description {
+          description
+            "Provide a description for sampling";
+          type string {
+            pattern '[a-zA-Z0-9\-_]{1,200}';
+          }
+        }
+
+        container mode {
+          description
+            "Sampling mode";
+          container deterministic {
+            description
+              "Deterministic mode of sampling";
+            leaf window {
+              description
+                "Select a packet out of an N packets window";
+              type uint32 {
+                range "1..4294967295";
+              }
+            }
+          }
+
+          container random {
+            description
+              "Random mode of sampling";
+            leaf range {
+              description
+                "Determines the variance of the sampling point, a random offset range";
+              type uint32 {
+                range "1..4294967295";
+              }
+            }
+
+            leaf window {
+              description
+                "Select a packet out of an N packet window";
+              type uint32 {
+                range "1..4294967295";
+              }
+            }
+          }
+        }
+      }
+
+      list monitor {
+        description
+          "Flow monitor configuration";
+        key "name";
+        leaf name {
+          type string {
+            pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+          }
+        }
+
+        leaf description {
+          description
+            "Provide a description for this flow monitor";
+          type string {
+            pattern '[a-zA-Z0-9\-_]{1,200}';
+          }
+        }
+
+        container record {
+          description
+            "Add a record to match flows";
+          leaf name {
+            type string {
+              pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+            }
+          }
+        }
+
+        container record-ipv6 {
+          description
+            "Add a record to match ipv6 flows";
+          leaf name {
+            type string {
+              pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+            }
+          }
+        }
+
+        list exporter {
+          description
+            "Add an exporter to export records";
+          key "name";
+          leaf name {
+            type string {
+              pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+            }
+          }
+        }
+
+        container sampling {
+          description
+            "Add sampling configuration to the interface";
+          leaf name {
+            type string {
+              pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+            }
+          }
+        }
+      }
+
+      list interfaces {
+        description
+          "Interface configuration";
+        key "name";
+        leaf name {
+          type string;
+        }
+
+        container monitor {
+          description
+            "Add monitor configuration to the interface";
+          leaf name {
+            type string {
+              pattern '[a-zA-Z][a-zA-Z0-9\-_]{0,63}';
+            }
+          }
+        }
+      }
+    }
+
+    container state {
+      description
+        "Flow database state";
+      config false;
+
+      leaf observation-domain-id {
+        config false;
+        type uint32;
+      }
+
+      leaf total-flows {
+        config false;
+        type uint32;
+      }
+
+      leaf max-flows-reached-count {
+        config false;
+        type uint32;
+      }
+
+      list interfaces {
+        description
+          "Interface configuration";
+        config false;
+        key "name";
+        leaf name {
+          config false;
+          type string;
+        }
+
+        leaf num-flows {
+          config false;
+          type uint32;
+        }
+
+        leaf state {
+          config false;
+          type enumeration {
+            enum "default" {
+              description
+                "Unknown";
+            }
+            enum "ok" {
+              description
+                "Monitor set successfully";
+            }
+            enum "flow-disabled" {
+              description
+                "Flow is in disabled state";
+            }
+            enum "interface-monitor-unset" {
+              description
+                "Monitor not set on the interface";
+            }
+            enum "interface-not-supported" {
+              description
+                "Interface not supported for monitoring";
+            }
+            enum "monitor-exporter-unset" {
+              description
+                "Exporter not set on the Monitor";
+            }
+            enum "monitor-record-unset" {
+              description
+                "Record not set on the Monitor";
+            }
+            enum "exporter-unset"{
+              description
+                "Exporter not set";
+            }
+            enum "exporter-address-unset"{
+              description
+                "Exporter address not set";
+            }
+            enum "record-unset"{
+              description
+                "Record not set";
+            }
+            enum "record-match-unset"{
+              description
+                "Record match fields not set";
+            }
+            enum "record-v6-match-unset"{
+              description
+                "IPv6 Record match fields not set";
+            }
+          }
+        }
+      }
+    }
+  }
+}
