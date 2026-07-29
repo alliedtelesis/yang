@@ -1,0 +1,122 @@
+module at-mdns {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-mdns";
+  prefix mdns;
+
+  import ietf-inet-types {
+    prefix inet;
+    revision-date "2013-07-15";
+  }
+
+  organization
+    "Allied Telesis Labs New Zealand";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "YANG model for multicast DNS (mDNS) configuration and operational state.";
+
+  revision "2026-04-09" {
+    description "Initial revision.";
+    reference "https://datatracker.ietf.org/doc/html/rfc6762";
+  }
+
+  container mdns {
+    description "Top-level container for mDNS configuration and state.";
+
+    container config {
+      description "mDNS configuration data.";
+
+      leaf hostname {
+        type string;
+        description "Hostname to use for mDNS announcements.";
+      }
+
+      list services {
+        key name;
+        description "Services to be advertised via mDNS.";
+
+        leaf name {
+          type string;
+          description "Service name (e.g., _http._tcp).";
+        }
+        leaf port {
+          type uint16;
+          description "Port number for the service.";
+        }
+        leaf txt-record {
+          type string;
+          description "Optional TXT record contents.";
+        }
+      }
+
+      list interfaces {
+        key name;
+        description "Network interfaces on which to run mDNS.";
+
+        leaf name {
+          type string;
+          description "Interface name (e.g., eth0).";
+        }
+      }
+
+      leaf reflection-enabled {
+        type boolean;
+        default false;
+        description
+          "If true, enables reflection of mDNS packets across interfaces.";
+      }
+    }
+
+    container state {
+      config false;
+      description "Operational state information for mDNS.";
+
+      list seen-devices {
+        key device-id;
+        description
+          "Devices discovered via mDNS on any configured interface.";
+
+        leaf device-id {
+          type string;
+          description
+            "Unique identifier for this device (e.g., mDNS instance name or hostname).";
+        }
+
+        leaf ip-address {
+          type inet:ip-address;
+          description "IP address of the discovered device.";
+        }
+
+        leaf interface {
+          type string;
+          description "Interface name on which the mDNS information was observed (e.g., eth0).";
+        }
+
+        leaf last-seen {
+          type uint64;
+          description "Unix timestamp (seconds since epoch) when this device was last seen.";
+        }
+
+        list services {
+          key name;
+          description "Services advertised by the discovered device.";
+
+          leaf name {
+            type string;
+            description "Service name (e.g., _http._tcp).";
+          }
+          leaf port {
+            type uint16;
+            description "Service port.";
+          }
+          leaf txt-record {
+            type string;
+            description "TXT record contents if present.";
+          }
+        }
+      }
+    }
+  }
+}

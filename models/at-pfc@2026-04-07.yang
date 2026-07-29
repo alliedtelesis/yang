@@ -1,0 +1,266 @@
+module at-pfc {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-pfc";
+  prefix "pfc";
+
+  import openconfig-if-ethernet { prefix oc-eth; }
+  import openconfig-interfaces { prefix oc-if; }
+  import openconfig-yang-types { prefix oc-yang; }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines configuration and state data for
+    Priority Flow Control (PFC) based on the IEEE 802.1Qbb
+    standard.";
+
+  revision "2026-04-07" {
+    description "Add interface statistic counters";
+  }
+
+  revision "2025-08-08" {
+    description
+      "Initial revision.";
+    reference "0.1.1";
+  }
+
+  feature PFC {
+    description
+      "Enables PFC support as defined in IEEE 802.1Qbb.";
+    reference
+      "IEEE 802.1Qbb";
+  }
+
+  // grouping statements
+
+  grouping pfc-config {
+    description
+      "PFC global config grouping";
+
+    leaf enable {
+      type boolean;
+      default false;
+      description
+        "Enable or Disable PFC";
+    }
+  }
+
+  grouping pfc-if-state {
+    description
+      "PFC interface config grouping";
+
+    container statistics {
+      description
+        "PFC interface statistics";
+
+      leaf in-total-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received on this interface";
+      }
+
+      leaf in-tc0-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received for traffic class
+          0 of this interface";
+      }
+
+      leaf in-tc1-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received for traffic class
+          1 of this interface";
+      }
+
+      leaf in-tc2-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received for traffic class
+          2 of this interface";
+      }
+
+      leaf in-tc3-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received for traffic class
+          3 of this interface";
+      }
+
+      leaf in-tc4-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received for traffic class
+          4 of this interface";
+      }
+
+      leaf in-tc5-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received for traffic class
+          5 of this interface";
+      }
+
+      leaf in-tc6-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received for traffic class
+          6 of this interface";
+      }
+
+      leaf in-tc7-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames received for traffic class
+          7 of this interface";
+      }
+
+      leaf out-total-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted on this interface";
+      }
+
+      leaf out-tc0-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted for traffic class
+          0 of this interface";
+      }
+
+      leaf out-tc1-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted for traffic class
+          1 of this interface";
+      }
+
+      leaf out-tc2-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted for traffic class
+          2 of this interface";
+      }
+
+      leaf out-tc3-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted for traffic class
+          3 of this interface";
+      }
+
+      leaf out-tc4-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted for traffic class
+          4 of this interface";
+      }
+
+      leaf out-tc5-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted for traffic class
+          5 of this interface";
+      }
+
+      leaf out-tc6-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted for traffic class
+          6 of this interface";
+      }
+
+      leaf out-tc7-pkts {
+        type oc-yang:counter64;
+        description
+          "A count of PFC MAC Control frames transmitted for traffic class
+          7 of this interface";
+      }
+    }
+  }
+
+  grouping pfc-if-config {
+    description
+      "PFC interface config grouping";
+
+      leaf mode {
+        type enumeration {
+          enum ON {
+            description "Enable PFC on an interface";
+          }
+          enum OFF {
+            description "Disable PFC on an interface";
+          }
+          enum AUTO {
+            description "Auto-negotiate PFC state with peer via DCBX protocol";
+          }
+        }
+        default "AUTO";
+        description
+          "Enable/Disable/Auto-negotiate PFC operational state on the interface";
+      }
+
+      leaf-list priorities {
+        type uint8 {
+            range 0..7;
+        }
+        description
+          "Traffic class priority list";
+      }
+  }
+
+  // data definition statements
+
+  container priority-flow-control {
+    if-feature "PFC";
+    description
+      "PFC parameters";
+
+    container config {
+      description
+        "Configuration data for PFC";
+      uses pfc-config;
+    }
+
+    container state {
+      config false;
+      description
+        "State variables for PFC";
+      uses pfc-config;
+    }
+  }
+
+  // augment statements
+
+  augment "/oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:config" {
+    description
+      "Apply IEEE 802.1Qbb PFC interface parameters";
+
+    container priority-flow-control {
+      if-feature "PFC";
+      description
+        "PFC interface parameters";
+
+      uses pfc-if-config;
+    }
+  }
+
+  augment "/oc-if:interfaces/oc-if:interface/oc-eth:ethernet/oc-eth:state" {
+    description
+      "IEEE 802.1Qbb PFC interface parameters";
+
+    container priority-flow-control {
+      config false;
+      if-feature "PFC";
+      description
+        "PFC interface parameters";
+
+      uses pfc-if-config;
+      uses pfc-if-state;
+    }
+  }
+}

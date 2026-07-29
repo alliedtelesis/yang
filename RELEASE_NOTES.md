@@ -1,5 +1,31 @@
 # Yang data models release notes
 
+## 5.5.6-1
+
+### New models
+
+#### Allied Telesis models
+
+    at-arp-dos-mon@2026-05-13.yang
+    at-gui@2026-03-17.yang
+    at-mdns-topology@2026-05-12.yang
+    at-mdns@2026-04-09.yang
+    at-mlag@2026-06-30.yang
+    at-wireless-scan-topology@2026-03-25.yang
+
+#### Standard models
+
+    N/A
+
+### Modified models
+
+    at-dpi.yang
+     at-dpi@2019-03-29.yang -> at-dpi@2025-05-01.yang
+    at-ietf-hardware-deviation.yang
+     at-ietf-hardware-deviation@2025-09-24.yang -> at-ietf-hardware-deviation@2026-06-11.yang
+    at-pfc.yang
+     at-pfc@2025-08-08.yang -> at-pfc@2026-04-07.yang
+
 ## 5.5.6
 
 ### New models

@@ -1,0 +1,111 @@
+module at-mdns-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-mdns-topology";
+  prefix at-mdnst;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to mDNS topology.";
+
+  revision "2026-05-12" {
+      description "Initial revision";
+  }
+
+  grouping mdns-node-attributes {
+    container mdns-node-attributes {
+      leaf name {
+        type string;
+        description
+          "mDNS host name.";
+        reference
+          "RFC 6762: Multicast DNS. Section 2.";
+      }
+      leaf-list ip-address {
+        type inet:ip-address;
+        description
+          "A (IPv4) or AAAA (IPv6) address record for this mDNS host name.";
+        reference
+          "RFC 6762: Multicast DNS. Section 6.2.";
+      }
+      container services {
+        list service {
+          key "name";
+          leaf name {
+            type string;
+            description
+              "The type of service identified by a DNS-SD service identifier (for example, _http._tcp).";
+          }
+          leaf port {
+            type inet:port-number;
+            description
+              "The TCP or UDP port number on which the advertised service is available.";
+          }
+          leaf txt-record {
+            type string;
+            description
+              "TXT record for this service, if one is present.";
+            reference
+              "RFC 6763: DNS-Based Service Discovery. Section 6.";
+          }
+        }
+      }
+    }
+  }
+
+  grouping mdns-link-attributes {
+    container mdns-link-attributes {
+      leaf timestamp {
+        type uint64;
+        description
+          "Unix timestamp (seconds since epoch) when the mDNS device was last seen.";
+      }
+    }
+  }
+
+  grouping mdns-network-type {
+    description
+      "Indicates the topology type to be mDNS.";
+    container mdns-topology {
+      presence "Indicates mDNS Network Topology.";
+      description
+        "The presence of the container node indicates mDNS.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses mdns-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nw:node" {
+    when '/nw:networks/nw:network/nw:network-types/at-mdnst:mdns-topology' {
+      description
+        "Augmentation parameters apply only for networks with mDNS topology.";
+    }
+    uses mdns-node-attributes;
+  }
+
+  augment "/nw:networks/nw:network/nt:link" {
+    when '/nw:networks/nw:network/nw:network-types/at-mdnst:mdns-topology' {
+      description
+        "Augmentation parameters apply only for networks with mDNS topology.";
+    }
+    uses mdns-link-attributes;
+  }
+}

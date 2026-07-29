@@ -1,0 +1,77 @@
+module at-ietf-hardware-deviation {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-ietf-hardware-deviation";
+  prefix at-ietf-hw-dev;
+
+  import ietf-hardware {
+    prefix hw;
+  }
+
+   organization
+    "Allied Telesis Labs Limited";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module contains deviation statements for the ietf-hardware module.";
+
+  revision 2026-06-11 {
+    description
+      "Support for many leaves now added.
+       Several config leaves will not supported.";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  revision 2025-09-24 {
+    description
+      "Initial revision";
+    reference
+      "RFC 6020: YANG - A Data Modeling Language for the
+       Network Configuration Protocol (NETCONF)";
+  }
+
+  deviation "/hw:hardware/hw:component/hw:class" {
+    deviate replace {
+      config false;
+    }
+  }
+
+  deviation "/hw:hardware/hw:component/hw:parent" {
+    deviate replace {
+      config false;
+    }
+  }
+
+  deviation "/hw:hardware/hw:component/hw:parent-rel-pos" {
+    deviate replace {
+      config false;
+    }
+  }
+
+  deviation "/hw:hardware/hw:component/hw:alias" {
+    deviate replace {
+      config false;
+    }
+  }
+
+  deviation "/hw:hardware/hw:component/hw:asset-id" {
+    deviate replace {
+      config false;
+    }
+  }
+
+  deviation "/hw:hardware/hw:component/hw:uri" {
+    deviate replace {
+      config false;
+    }
+  }
+
+  deviation "/hw:hardware/hw:component/hw:state/hw:admin-state" {
+    deviate add {
+      must "starts-with(../../hw:name, 'usb') or starts-with(../../hw:name, 'sd')";
+    }
+  }
+}

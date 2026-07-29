@@ -1,0 +1,264 @@
+module at-gui {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-gui";
+  prefix at-gui;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization
+    "Allied Telesis";
+  contact
+    "Allied Telesis Customer Support Group";
+  description
+    "This module defines the Allied Telesis GUI and web server configuration.";
+
+  revision 2026-03-17 {
+    description
+      "Initial revision";
+    reference
+      "Based on existing gui XML schema";
+  }
+
+  container gui {
+    leaf filename {
+      type string;
+      config false;
+      description
+        "Name of the active GUI resource file, or 'webgui' if the file was provided by the update server";
+    }
+    leaf red-logging {
+      type enumeration {
+        enum disable {
+          value 0;
+          description
+            "Disable RED format access logging for APIs";
+        }
+        enum enable {
+          value 1;
+          description
+            "Enable RED format access logging for APIs";
+        }
+      }
+      default "disable";
+      description
+        "RED format access logging for APIs";
+    }
+    leaf next-filename {
+      type string;
+      config false;
+      description
+        "Name of the GUI resource file that will be used next, or 'webgui' if the file will be provided by the update server";
+    }
+    leaf status {
+      type enumeration {
+        enum disable {
+          value 0;
+          description
+            "Disable GUI";
+        }
+        enum enable {
+          value 1;
+          description
+            "Enable GUI";
+        }
+      }
+      description
+        "Enable/disable status of the GUI";
+    }
+    leaf prefer-flash {
+      type enumeration {
+        enum disable {
+          value 0;
+          description
+            "Disable installing GUI file from flash";
+        }
+        enum enable {
+          value 1;
+          description
+            "Enable installing GUI file from flash";
+        }
+      }
+      default "disable";
+      description
+        "Enable/disable installing the GUI resource file from flash first";
+    }
+    leaf http-port {
+      type union {
+        type uint16 {
+          range "1..65535";
+        }
+        type enumeration {
+          enum none {
+            description
+              "No port. Do not open a port for this service";
+          }
+        }
+      }
+      default 80;
+      description
+        "Port to run the httpd server on";
+    }
+    leaf https-port {
+      type union {
+        type uint16 {
+          range "1..65535";
+        }
+        type enumeration {
+          enum none {
+            description
+              "No port. Do not open a port for this service";
+          }
+        }
+      }
+      default 443;
+      description
+        "Port to run the httpd secure server on";
+    }
+    leaf wpad-port {
+      type union {
+        type uint16 {
+          range "1..65535";
+        }
+        type enumeration {
+          enum none {
+            description
+              "No port. Do not open a port for this service";
+          }
+        }
+      }
+      default "none";
+      config false;
+      description
+        "Port to serve WPAD PAC file on. This is used for URL offload PAC file.
+        It may be the same as the port above, but all proxy clients must have access to this port on the router
+        if it is being used. Configurable via URL offload APIs on platforms that support URL offload.";
+    }
+    leaf vrf {
+      type string;
+      description
+        "VRF interface ID to bind to.";
+    }
+    leaf self-registration-2fa-port {
+      type union {
+        type uint16 {
+          range "1..65535";
+        }
+        type enumeration {
+          enum none {
+            description
+              "No port. Do not open a port for this service";
+          }
+        }
+      }
+      default "none";
+      config false;
+      description
+        "Port to run 2FA self registration on. Configured via 2FA APIs.";
+    }
+    leaf cloud-client {
+      type enumeration {
+        enum disable {
+          value 0;
+          description
+            "Cloud Client access to API is disabled";
+        }
+        enum enable {
+          value 1;
+          description
+            "Cloud Client access to API is enabled";
+        }
+      }
+      default "disable";
+      config false;
+      description
+        "Enable Cloud Client internal access to APIs. Set when cloud client service is enabled";
+    }
+    list listen-addresses {
+      key "index";
+      description
+        "Listen addresses for the GUI/API http server";
+      leaf index {
+        type uint64;
+        description
+          "Index of this listen address";
+      }
+      leaf address {
+        type inet:ip-address;
+        description
+          "IPv4 / IPv6 address to listen on";
+      }
+      leaf port {
+        type uint16 {
+          range "1..65535";
+        }
+        description
+          "Port for this address. Defaults to ../../http[s]-port";
+      }
+      leaf ifname {
+        type string {
+          pattern '[A-Za-z0-9.]{1,15}';
+        }
+        description
+          "Interface name";
+      }
+      leaf scheme {
+        type enumeration {
+          enum http {
+            description
+              "HTTP listen address";
+          }
+          enum https {
+            description
+              "HTTPS listen address";
+          }
+        }
+        default "http";
+        description
+          "Listen address scheme";
+      }
+      leaf owner {
+        type string;
+        config false;
+        description
+          "user or feature";
+      }
+    }
+    leaf api-check-content-type {
+      type enumeration {
+        enum disable {
+          value 0;
+          description
+            "Disable content-type HTTP header checking on APIs";
+        }
+        enum enable {
+          value 1;
+          description
+            "Enable content-type HTTP header checking on APIs";
+        }
+      }
+      default "disable";
+      description
+        "Enable/disable content-type HTTP header checking on APIs";
+    }
+    leaf tls-version-min {
+      type string {
+        pattern "(1.(2|3))";
+      }
+      default "1.2";
+      description
+        "Minimum version of TLS for HTTPS";
+    }
+    leaf notify-interval {
+      type uint32 {
+        range "0|10..525600";
+      }
+      default 1440;
+      description
+        "Interval for resource update checking in minutes";
+    }
+    description
+      "GUI and web server configuration settings";
+  }
+}

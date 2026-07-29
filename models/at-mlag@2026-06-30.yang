@@ -1,0 +1,317 @@
+module at-mlag {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-mlag";
+
+  prefix mlag;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the configuration and state data for Multi-Chassis Link Aggregation Group (MLAG)";
+
+  revision "2026-06-30" {
+    description "Initial revision";
+    reference "None";
+  }
+
+  typedef mlag-anycast-mac-address {
+    type string {
+      pattern '[0-9a-fA-F][02468ACEace](:[0-9a-fA-F]{2}){5}';
+    }
+    description
+     "The anycast-mac-address type represents an IEEE 802 MAC address
+      without the I/G bit set.";
+  }
+
+  typedef mlag-oper-status {
+    type enumeration {
+      enum DOWN {
+        description "Operationally down";
+      }
+      enum UP {
+        description "Operationally up";
+      }
+    }
+    description "Operational status";
+  }
+
+  typedef mlag-role {
+    type enumeration {
+      enum STANDBY {
+        description "Standby role (higher IP)";
+      }
+      enum ACTIVE {
+        description "Active role (lower IP)";
+      }
+    }
+    description "MLAG node role";
+  }
+
+  typedef mlag-domain-id {
+    type uint16 {
+      range "1";
+    }
+    description "MLAG domain id";
+  }
+
+  typedef mlag-interface {
+    type string {
+      pattern "(po[0-9]+)|(vlan[0-9]+)";
+    }
+    description
+      "Interface name, example: po1, vlan10";
+  }
+
+  // Grouping statements
+
+  grouping mlag-config {
+    description
+      "MLAG global config grouping";
+
+    leaf enable {
+      type boolean;
+      default false;
+      description
+        "Enable or Disable MLAG";
+    }
+    leaf msg-debug {
+      type boolean;
+      default false;
+      description
+        "Enable or Disable MLAG message debug";
+    }
+    leaf iccp-debug {
+      type enumeration {
+        enum critical {
+          description "Highest log level (least chatty)";
+        }
+        enum err;
+        enum warn;
+        enum notice;
+        enum info;
+        enum debug {
+          description "Lowest log level (most chatty)";
+        }
+    }
+    default "critical";
+    description
+      "Set ICCP debug log level";
+    }
+  }
+
+  grouping mlag-domain-config {
+    description
+      "MLAG domain config grouping";
+    leaf id {
+      type mlag-domain-id;
+    }
+    leaf source-address {
+      type inet:ipv4-address;
+      description
+        "Source address";
+    }
+    leaf peer-address {
+      type inet:ipv4-address;
+      description
+        "Peer address";
+    }
+    leaf peer-link {
+      type string {
+        pattern "(port[0-9]+\.[0-9]+\.[0-9]+)|(po[0-9]+)";
+      }
+      description
+        "Peer port name, either a portX.Y.Z or a poN.";
+    }
+    leaf keepalive-interval {
+      type uint16 {
+        range "1..60";
+      }
+      default "1";
+      description
+        "Keep alive interval in seconds";
+    }
+    leaf session-timeout {
+      type uint16 {
+        range "3..3600";
+      }
+      default "30";
+      description
+        "Session timeout in seconds. This should be configured to be greater than the keep alive interval";
+    }
+  }
+
+  grouping mlag-domain-state {
+    description "MLAG domain operational state";
+
+    leaf oper-status {
+      type mlag-oper-status;
+      description "ICCP session status";
+    }
+
+    leaf role {
+      type mlag-role;
+      description "Node role";
+    }
+
+    leaf system-mac {
+      type string;
+      description "Local system MAC";
+    }
+
+    leaf peer-mac {
+      type string;
+      description "Peer system MAC";
+    }
+
+    container local-interfaces {
+      description "MLAG local interfaces state";
+
+      list local-interface {
+        key "name";
+        description "Local interface entry";
+
+        leaf name {
+          type string;
+          description "Local interface name";
+        }
+
+        leaf port-isolate-peer-link {
+          type boolean;
+          description "BUM traffic isolation from peer-link";
+        }
+      }
+    }
+
+    container peer-interfaces {
+      description "Peer mlag interfaces from ICCP";
+
+      list peer-interface {
+        key "name";
+        description "Peer interface entry";
+
+        leaf name {
+          type string;
+          description "Peer interface name";
+        }
+
+        leaf oper-status {
+          type mlag-oper-status;
+          description "Peer interface status";
+        }
+      }
+    }
+  }
+
+  grouping mlag-interface-config {
+    description
+      "Interface config grouping";
+    leaf name {
+      type mlag-interface;
+    }
+
+    container sag {
+      when "starts-with(../../name, 'vlan')";
+      leaf ipv4-anycast-prefix {
+        type inet:ip-prefix;
+        description "Anycast IPv4 prefix, example: 192.0.2.0/24";
+      }
+
+      leaf ipv4-anycast-mac {
+        type mlag-anycast-mac-address;
+        description "Anycast virtual MAC for IPv4";
+      }
+
+      leaf ipv6-anycast-prefix {
+        type inet:ip-prefix;
+        description "Anycast IPv6 prefix, example: 192.0.2.0/24";
+      }
+
+      leaf ipv6-anycast-mac {
+        type mlag-anycast-mac-address;
+        description "Anycast virtual MAC for IPv6";
+      }
+    }
+    leaf domain-id {
+      when "starts-with(../name, 'po')";
+      type mlag-domain-id;
+    }
+  }
+
+  // Data definition statements
+
+  container mlag {
+
+    description
+      "MLAG parameters";
+
+    container domains {
+      description
+        "MLAG domains parameters";
+
+      list domain {
+        key "id";
+        description "Domain ID entry";
+
+        leaf id {
+          type mlag-domain-id;
+        }
+        container config {
+          description
+            "Configuration data for MLAG domain";
+          uses mlag-domain-config;
+        }
+        container state {
+          config false;
+          description
+            "State data for MLAG domain";
+          uses mlag-domain-config;
+          uses mlag-domain-state;
+        }
+      }
+    }
+
+    container interfaces {
+      description
+        "MLAG interfaces parameters";
+      list interface {
+        key "name";
+        description "Interface entry";
+
+        leaf name {
+          type mlag-interface;
+        }
+        container config {
+          description
+            "Configuration data for MLAG interface";
+          uses mlag-interface-config;
+        }
+        container state {
+          config false;
+          description
+            "State data for MLAG interface";
+          uses mlag-interface-config;
+        }
+      }
+    }
+
+    container config {
+      description
+        "mlag config";
+      uses mlag-config;
+    }
+    container state {
+      config false;
+      description
+        "mlag state";
+      uses mlag-config;
+    }
+  }
+}

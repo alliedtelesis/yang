@@ -1,0 +1,299 @@
+module at-wireless-scan-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-wireless-scan-topology";
+  prefix at-wlst;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to IEEE 802.11 RF scan topology.";
+
+  revision "2026-03-25" {
+      description "Initial revision";
+  }
+
+  typedef encryption-method {
+    type enumeration {
+      enum unknown {
+        value 0;
+      }
+      enum none {
+        value 1;
+      }
+      enum wep-auth-open {
+        value 20;
+      }
+      enum wep-auth-shared {
+        value 21;
+      }
+      enum wep-auth-open-shared {
+        value 22;
+      }
+      enum wep-8021x {
+        value 23;
+      }
+      enum wpa-psk {
+        value 300;
+      }
+      enum wpa-psk-ccmp {
+        value 301;
+      }
+      enum wpa-psk-tkip {
+        value 302;
+      }
+      enum wpa-psk-ccmp-tkip {
+        value 303;
+      }
+      enum wpa2-psk {
+        value 310;
+      }
+      enum wpa2-psk-ccmp {
+        value 311;
+      }
+      enum wpa2-psk-tkip {
+        value 312;
+      }
+      enum wpa2-psk-ccmp-tkip {
+        value 313;
+      }
+      enum mix-psk {
+        value 320;
+      }
+      enum mix-psk-ccmp {
+        value 321;
+      }
+      enum mix-psk-tkip {
+        value 322;
+      }
+      enum mix-psk-ccmp-tkip {
+        value 323;
+      }
+      enum wpa3-psk-ccmp {
+        value 331;
+      }
+      enum wpa2-wpa3-mix-psk-ccmp {
+        value 341;
+      }
+      enum wpa-ent {
+        value 400;
+      }
+      enum wpa-ent-ccmp {
+        value 401;
+      }
+      enum wpa-ent-tkip {
+        value 402;
+      }
+      enum wpa-ent-ccmp-tkip {
+        value 403;
+      }
+      enum wpa2-ent {
+        value 410;
+      }
+      enum wpa2-ent-ccmp {
+        value 411;
+      }
+      enum wpa2-ent-tkip {
+        value 412;
+      }
+      enum wpa2-ent-ccmp-tkip {
+        value 413;
+      }
+      enum mix-ent {
+        value 420;
+      }
+      enum mix-ent-ccmp {
+        value 421;
+      }
+      enum mix-ent-tkip {
+        value 422;
+      }
+      enum mix-ent-ccmp-tkip {
+        value 423;
+      }
+      enum wpa3-ent-gcmp {
+        value 430;
+      }
+      enum wpa3-ent-ccmp {
+        value 431;
+      }
+      enum wpa2-wpa3-mix-ent-ccmp {
+        value 441;
+      }
+      enum enhanced-open {
+        value 531;
+      }
+    }
+  }
+
+
+  typedef phy-mode {
+    type enumeration {
+      enum auto {
+        value 0;
+      }
+      enum 11b {
+        value 1;
+      }
+      enum 11a {
+        value 2;
+      }
+      enum 11g {
+        value 3;
+      }
+      enum 11n {
+        value 4;
+      }
+      enum 11ac {
+        value 5;
+      }
+      enum 11ax {
+        value 6;
+      }
+      enum 11be {
+        value 7;
+      }
+    }
+  }
+
+  typedef opmode {
+    type enumeration {
+      enum unknown {
+        value 0;
+      }
+      enum adhoc {
+        value 1;
+      }
+      enum ap {
+        value 2;
+      }
+      enum mesh {
+        value 3;
+      }
+    }
+  }
+
+  typedef time-units {
+    type uint32;
+    description
+      "A measurement of time in multiples of 1024 µs.";
+    reference
+      "3.1 of IEEE Std 802.11-2020";
+  }
+
+  grouping wireless-scan-link-attributes {
+    container wireless-scan-link-attributes {
+      leaf ssid {
+        type string;
+        description
+          "802.11 SSID";
+      }
+      leaf channel {
+        type uint16;
+        description
+          "802.11 channel";
+      }
+      leaf rssi {
+        type int16;
+        units "dBm";
+        description
+          "Received Signal Strength Indicator";
+      }
+      leaf quality {
+        type uint8 {
+          range "0..100";
+        }
+        description
+          "Quality of Received Signal Strength, as a percentage value";
+      }
+      leaf max-quality {
+        type uint8 {
+          range "0..100";
+        }
+        description
+          "Maximum Observed Quality of Received Signal Strength";
+      }
+      leaf encryption {
+        type encryption-method;
+        description
+          "Encryption Method";
+      }
+      leaf phy-mode {
+        type phy-mode;
+        description
+          "802.11 PHY Mode";
+      }
+      leaf mode {
+        type opmode;
+        description
+          "Operational Mode";
+      }
+      leaf bcn-interval {
+        type time-units;
+        units "TU";
+        description
+          "How long between beacons";
+      }
+      leaf detect-time {
+        type yang:timestamp;
+        description
+         "Detection timestamp";
+      }
+    }
+  }
+
+  grouping wireless-scan-node-attributes {
+    container wireless-scan-node-attributes {
+      leaf bssid {
+        type yang:mac-address;
+        description
+          "802.11 BSSID.";
+      }
+    }
+  }
+
+  grouping wireless-scan-network-type {
+    description
+      "Indicates the topology type to be 802.11 RF Scan.";
+    container wireless-scan-topology {
+      presence "Indicates 802.11 RF Scan Network Topology.";
+      description
+        "The presence of the container node indicates 802.11 RF Scan topology.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses wireless-scan-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nt:link" {
+    when '/nw:networks/nw:network/nw:network-types/at-wlst:wireless-scan-topology' {
+      description
+        "Augmentation parameters apply only for networks with 802.11 RF Scan topology.";
+    }
+    uses wireless-scan-link-attributes;
+  }
+
+  augment "/nw:networks/nw:network/nw:node" {
+    when '/nw:networks/nw:network/nw:network-types/at-wlst:wireless-scan-topology' {
+      description
+        "Augmentation parameters apply only for networks with 802.11 RF Scan topology.";
+    }
+    uses wireless-scan-node-attributes;
+  }
+}
