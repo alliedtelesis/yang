@@ -1,0 +1,63 @@
+module at-ieee802-dot1cb-deviation {
+  yang-version "1.1";
+  namespace "http://alliedtelesis.com/ns/yang/at-ieee802-dot1cb-deviation";
+  prefix at-dot1cb;
+
+  import ieee802-dot1cb-frer {
+    prefix dot1cb-frer;
+  }
+  import ieee802-dot1cb-stream-identification {
+    prefix dot1cb-sid;
+  }
+  import ieee802-dot1cb-mask-and-match {
+    prefix dot1cb-mm-sid;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "Deviations for IEEE 802.1CB YANG models.
+
+     Active Destination MAC and VLAN, IP, and mask-and-match stream
+     identification methods are not implemented. HSR and PRP encapsulation
+     types are not supported. Autoconfiguration is not implemented.";
+
+  revision 2026-08-07 {
+    description "Initial revision.";
+  }
+
+  deviation "/dot1cb-sid:stream-identity/dot1cb-sid:parameters/dot1cb-sid:dmac-vlan-stream-identification" {
+    deviate not-supported;
+  }
+  deviation "/dot1cb-sid:stream-identity/dot1cb-sid:parameters/dot1cb-sid:ip-stream-identification" {
+    deviate not-supported;
+  }
+
+  deviation "/dot1cb-sid:stream-identity/dot1cb-sid:parameters/dot1cb-mm-sid:mask-and-match-stream-identification" {
+    deviate not-supported;
+  }
+  deviation "/dot1cb-mm-sid:per-port-msdu-mask-max-length" {
+    deviate not-supported;
+  }
+
+  deviation "/dot1cb-frer:frer/dot1cb-frer:sequence-identification/dot1cb-frer:encapsulation/dot1cb-frer:encapsulation/dot1cb-frer:hsr-sequence-tag" {
+    deviate not-supported;
+  }
+  deviation "/dot1cb-frer:frer/dot1cb-frer:sequence-identification/dot1cb-frer:encapsulation/dot1cb-frer:encapsulation/dot1cb-frer:prp-sequence-tag" {
+    deviate not-supported;
+  }
+
+  deviation "/dot1cb-frer:frer/dot1cb-frer:autoconfiguration" {
+    deviate not-supported;
+  }
+  deviation "/dot1cb-sid:stream-identity/dot1cb-frer:auto-configured" {
+    deviate not-supported;
+  }
+  deviation "/dot1cb-sid:stream-identity/dot1cb-frer:lan-path-id" {
+    deviate not-supported;
+  }
+}

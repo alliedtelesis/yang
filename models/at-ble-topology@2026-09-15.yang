@@ -1,0 +1,158 @@
+module at-ble-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-ble-topology";
+  prefix at-blet;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to Bluetooth LE topology.";
+
+  revision "2026-09-15" {
+      description "Initial revision";
+  }
+
+  grouping ble-node-attributes {
+    container ble-node-attributes {
+      leaf mac-addr {
+        type yang:mac-address;
+        description
+          "MAC / BDADDR of the scanned ble device.";
+      }
+      leaf alias {
+         type string;
+         description
+           "Local name for device.";
+      }
+      leaf name {
+        type string;
+        description
+          "Bluetooth name advertised by the device.";
+      }
+      leaf class {
+        type uint32;
+        description
+          "Bluetooth Class of Device as defined by the Bluetooth specification.";
+      }
+      leaf appearance {
+        type uint16;
+        description
+          "GATT appearance value.";
+      }
+      leaf services-resolved {
+        type boolean;
+        description
+          "Indicates whether GATT services have been fully discovered.";
+      }
+      leaf advertising-flags {
+        type binary;
+        description
+          "Advertising Data Flags byte array (AD type 0x01).";
+      }
+      leaf-list uuids {
+        type yang:uuid;
+        description
+          "Service UUIDs advertised by the device.";
+      }
+      list manufacturer-data {
+        key "company-id";
+        description
+          "Manufacturer-specific data from the BLE advertisement.";
+        leaf company-id {
+          type uint16;
+          description
+            "Bluetooth SIG-assigned company identifier.";
+        }
+        leaf data {
+          type binary;
+          description
+            "Manufacturer-specific data payload.";
+        }
+      }
+      list service-data {
+        key "uuid";
+        description
+          "Service data from the BLE advertisement.";
+        leaf uuid {
+          type yang:uuid;
+          description
+            "UUID identifying the service.";
+        }
+        leaf data {
+          type binary;
+          description
+            "Raw service data payload.";
+        }
+      }
+    }
+  }
+
+  grouping ble-link-attributes {
+    container ble-link-attributes {
+      leaf rssi {
+        type int16;
+        units "dBm";
+        description
+          "Received Signal Strength Indicator";
+      }
+      leaf tx-power {
+        type int16;
+        units "dBm";
+        description
+          "Transmitted power level as reported in the advertisement.";
+      }
+      leaf timestamp {
+        type uint64;
+        description
+          "Unix timestamp (seconds since epoch) when the BLE packet was received by the scanner.";
+      }
+    }
+  }
+
+  grouping ble-network-type {
+    description
+      "Indicates the topology type to be Bluetooth LE.";
+    container ble-topology {
+      presence "Indicates Bluetooth LE Network Topology.";
+      description
+        "The presence of the container node indicates Bluetooth LE Network Topology.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses ble-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nw:node" {
+    when '/nw:networks/nw:network/nw:network-types/at-blet:ble-topology' {
+      description
+        "Augmentation parameters apply only for networks with Bluetooth LE topology.";
+    }
+    uses ble-node-attributes;
+  }
+
+  augment "/nw:networks/nw:network/nt:link" {
+    when '/nw:networks/nw:network/nw:network-types/at-blet:ble-topology' {
+      description
+        "Augmentation parameters apply only for networks with Bluetooth LE topology.";
+    }
+    uses ble-link-attributes;
+  }
+}
+

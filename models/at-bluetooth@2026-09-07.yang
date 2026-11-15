@@ -1,0 +1,813 @@
+
+module at-bluetooth {
+    yang-version 1.1;
+    namespace "http://alliedtelesis.com/ns/yang/at-bluetooth";
+    prefix at-bluetooth;
+
+    organization
+    "Allied Telesis Labs New Zealand";
+
+    contact
+    "Allied Telesis Customer Support Group";
+
+    description
+    "This document defines a YANG module for
+    Allied Telesis Wireless Bluetooth LE";
+
+    revision 2026-09-07 {
+    description
+      "Initial revision.";
+    reference
+      "RFC 6020: A Data Modeling Language for the
+            Network Configuration Protocol (NETCONF)
+
+       RFC 7950: The YANG 1.1 Data Modeling Language";
+    }
+
+    typedef mac-address {
+        type string {
+        pattern '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}';
+        }
+        description "IEEE 802 MAC address.";
+    }
+
+    typedef uuid-128 {
+        type string {
+        pattern
+            '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}';
+        }
+        description "128-bit UUID string.";
+    }
+
+    typedef device-class {
+        type uint32;
+        description
+        "Bluetooth Class of Device as defined by the Bluetooth specification.";
+    }
+    container bluetooth {
+        container settings {
+            container scan {
+                description "BLE scanning configuration.";
+
+                leaf enabled {
+                    type boolean;
+                    default false;
+                    description "Enable BLE scanning.";
+                }
+
+                leaf min-rssi {
+                    type int8;
+                    units "dBm";
+                    description
+                        "Drop advertisements received weaker than this RSSI
+                         threshold (dBm). When unset no RSSI filtering is
+                         applied.";
+                }
+
+                leaf period {
+                    type uint16;
+                    units "seconds";
+                    default 0;
+                    description
+                        "Interval between the start of one scan and the start of
+                         the next, in seconds. When non-zero a scan runs for
+                         'duration' seconds, then stops until the interval
+                         elapses and the next scan begins. 0 means scan
+                         continuously.
+
+                         'duration' must be non-zero and no longer than this
+                         interval. A duration equal to the interval leaves no
+                         time between scans, so scanning is continuous. The CLI
+                         takes both values in one command and refuses a longer
+                         duration. ble_scan reports a pair that breaks the rule
+                         and scans continuously instead.
+
+                         An interval longer than 'device-timeout' lets discovered
+                         devices age out between scans.";
+                }
+
+                leaf duration {
+                    type uint16;
+                    units "seconds";
+                    description
+                        "How long each scan runs, in seconds. Must be non-zero
+                         and no longer than 'period'. A duration equal to
+                         'period' scans continuously. Used only when 'period' is
+                         non-zero, since a period of 0 scans continuously too.
+
+                         There is no default. A non-zero 'period' without a
+                         duration is an incomplete configuration: ble_scan
+                         reports it and scans continuously. The CLI cannot
+                         produce that state, since it sets and clears the two
+                         leaves together.";
+                }
+
+                leaf device-timeout {
+                    type uint32;
+                    units "seconds";
+                    default 300;
+                    description
+                        "How long a discovered device is retained after it was
+                         last seen. Devices not seen within this period are
+                         discarded.";
+                }
+
+                leaf max-devices {
+                    type uint16 {
+                        range "1..2000";
+                    }
+                    default 2000;
+                    description
+                        "The most devices kept in discovered-ble-devs. When a
+                         new device takes the list over this limit, the least
+                         recently seen device is removed. Lowering the limit
+                         below the number of devices in the list removes the
+                         least recently seen devices until the list fits.";
+                }
+
+                list company-id-filter {
+                    key "company-id";
+                    description
+                        "Only record devices advertising one of these Bluetooth
+                         SIG company identifiers. A maximum of 5 entries may be
+                         configured. When the list is empty no company-ID
+                         filtering is applied.";
+
+                    leaf company-id {
+                        type uint16;
+                        description "Bluetooth SIG-assigned company identifier.";
+                    }
+                }
+            }
+
+            list beacons {
+                key "name";
+                description "BLE beacon advertisements to transmit.";
+
+                leaf name {
+                    type string {
+                        pattern '[A-Za-z0-9_]+';
+                    }
+                    description
+                        "Unique name identifying this beacon entry. Only standard
+                         letters (A-Z, a-z), digits (0-9) and underscores are
+                         permitted. The name is used to build the D-Bus object
+                         path of the advertisement, whose path elements accept
+                         only these characters, so restricting the key here keeps
+                         each beacon on its own path.";
+                }
+
+                leaf enabled {
+                    type boolean;
+                    default false;
+                    description
+                        "Enable or disable this beacon advertisement.
+
+                         Only one device-name beacon may be enabled at a time.
+                         Enabling a device-name beacon clears this leaf on
+                         whichever one was enabled before it, so that one must
+                         be re-enabled to advertise again. Where a stored config
+                         has several enabled, the lowest beacon name wins and
+                         the rest are cleared.";
+                }
+
+                leaf type {
+                    type enumeration {
+                        enum ibeacon {
+                            description "Apple iBeacon format.";
+                        }
+                        enum eddystone-url {
+                            description "Google Eddystone-URL format.";
+                        }
+                        enum eddystone-uid {
+                            description "Google Eddystone-UID format.";
+                        }
+                        enum raw {
+                            description "Raw advertisement payload supplied by the user.";
+                        }
+                        enum device-name {
+                            description
+                                "Advertise the Bluetooth device name as the BLE
+                                 Local Name. The Local Name is a single
+                                 device-wide property, so only one device-name
+                                 beacon may be enabled at a time — see the
+                                 enabled leaf.";
+                        }
+                    }
+                    description "Beacon advertisement format.";
+                }
+
+                leaf device-name-hostname {
+                    type boolean;
+                    default false;
+                    description
+                        "For a device-name beacon: when true, advertise the live
+                         system hostname (auto-updates when the hostname changes)
+                         instead of device-name-value.";
+                }
+
+                leaf device-name-value {
+                    type string {
+                        pattern '[A-Za-z0-9 _-]{1,64}';
+                    }
+                    description
+                        "For a device-name beacon: the specific name to advertise
+                         as the Bluetooth device name when device-name-hostname is
+                         false. Only standard letters (A-Z, a-z), digits (0-9),
+                         spaces, dashes and underscores are permitted.";
+                }
+
+                leaf ibeacon-uuid {
+                    type uuid-128;
+                    description "iBeacon proximity UUID (128-bit).";
+                }
+
+                leaf ibeacon-major {
+                    type uint16;
+                    description "iBeacon major value.";
+                }
+
+                leaf ibeacon-minor {
+                    type uint16;
+                    description "iBeacon minor value.";
+                }
+
+                leaf ibeacon-tx-power {
+                    type int8;
+                    description "iBeacon measured TX power at 1 m (dBm).";
+                }
+
+                leaf eddystone-url {
+                    type string {
+                        length "8..108";
+                        pattern '(http://www\.|https://www\.|http://|https://)[!-~]+';
+                    }
+                    description
+                        "Eddystone-URL: URL to advertise. Must begin with
+                         http://, https://, http://www. or https://www. and
+                         contain only graphic printable ASCII characters
+                         (no spaces). The URL is compressed per the
+                         Eddystone-URL spec and the encoded form must not
+                         exceed 17 bytes; that exact limit is enforced by the
+                         CLI and the ble_beacon daemon.";
+                }
+
+                leaf eddystone-tx-power {
+                    type int8;
+                    description "Eddystone TX power at 0 m (dBm).";
+                }
+
+                leaf eddystone-namespace {
+                    type binary {
+                        length "10";
+                    }
+                    description "Eddystone-UID namespace (10 bytes, base64-encoded).";
+                }
+
+                leaf eddystone-instance {
+                    type binary {
+                        length "6";
+                    }
+                    description "Eddystone-UID instance (6 bytes, base64-encoded).";
+                }
+
+                list raw-manufacturer-data {
+                    key "company-id";
+                    description "Raw manufacturer-specific AD entries keyed by company ID.";
+
+                    leaf company-id {
+                        type uint16;
+                        description "Bluetooth SIG company identifier (little-endian).";
+                    }
+
+                    leaf data {
+                        type binary {
+                            length "0..24";
+                        }
+                        description
+                            "Raw manufacturer data payload (base64-encoded bytes).
+                             A legacy advertisement holds 31 bytes, 3 of which the
+                             kernel spends on the Flags AD structure it prepends on
+                             an LE-only radio. This entry also costs 2 bytes of AD
+                             header plus 2 for the company ID, so 24 is the most one
+                             entry can carry.";
+                    }
+                }
+
+                list raw-service-data {
+                    key "uuid";
+                    description "Raw service-data AD entries keyed by UUID.";
+
+                    leaf uuid {
+                        type uuid-128;
+                        description "Service UUID.";
+                    }
+
+                    leaf data {
+                        type binary {
+                            length "0..10";
+                        }
+                        description
+                            "Raw service data payload (base64-encoded bytes).
+                             A legacy advertisement holds 31 bytes, 3 of which the
+                             kernel spends on the Flags AD structure it prepends on
+                             an LE-only radio. This entry also costs 2 bytes of AD
+                             header plus 16 for the UUID, so 10 is the most one
+                             entry can carry.";
+                    }
+                }
+            }
+        }
+        container state {
+            config false;
+            description "Operational state reported by the Bluetooth daemons.";
+
+            leaf advertising-slots-total {
+                type uint8;
+                description
+                    "How many LE advertising instances this controller offers.
+                     This is the ceiling on how many beacons can be on the air at
+                     once.";
+            }
+
+            leaf advertising-slots-in-use {
+                type uint8;
+                description
+                    "How many of those instances are currently in use. This
+                     counts every advertisement registered with the controller
+                     on this device, not only the beacons configured here, so it
+                     is not always the number of beacons reading advertising
+                     true. No further beacon can go on the air while it equals
+                     advertising-slots-total.";
+            }
+
+            list beacons {
+                key "name";
+                description
+                    "One entry per configured beacon, reported live by the
+                     ble_beacon daemon. The list is empty whenever that daemon is
+                     not running — which is the case while no beacon is enabled.";
+
+                leaf name {
+                    type string {
+                        pattern '[A-Za-z0-9_]+';
+                    }
+                    description
+                        "Name of the beacon in the settings/beacons list.";
+                }
+
+                leaf advertising {
+                    type boolean;
+                    description
+                        "True while this beacon is on the air, holding one of the
+                         controller's advertising slots.
+
+                         This is not the same as being enabled. An enabled beacon
+                         reads false when no controller is present, when its
+                         configuration was rejected, when another device-name
+                         beacon holds the Local Name, or when every advertising
+                         slot is already taken. The ble_beacon log gives the
+                         reason in each case.";
+                }
+            }
+        }
+        container statistics {
+            config false;
+            description
+                "Counts of events reported by the Bluetooth daemons, since
+                 whichever daemon reports them last started. ble_scan and
+                 ble_beacon each stop when their configuration disables them
+                 (no scan enabled, no beacon enabled), so a counter here only
+                 spans the daemon's current run, not device uptime, and reads
+                 back to zero the next time either one starts. There is no way
+                 to reset a counter without restarting its daemon.
+
+                 A section with no leaves present means that daemon is not
+                 currently running, rather than a daemon that is running with
+                 every count still at zero.";
+
+            container scan {
+                description "Counts reported by the ble_scan daemon.";
+
+                leaf start-time {
+                    type uint64;
+                    units "seconds";
+                    description
+                        "When the reporting ble_scan process started, as seconds
+                         since the Unix epoch (UTC). Useful in its own right,
+                         since the daemon can be stopped and restarted (by its
+                         configuration being disabled and re-enabled, or by a
+                         crash) independently of every other count here going
+                         back to zero when it does.";
+                }
+
+                leaf devices-added {
+                    type uint64;
+                    description
+                        "Distinct devices added to discovered-ble-devs: an
+                         address not already present in the table when a BlueZ
+                         InterfacesAdded or PropertiesChanged signal is processed.
+
+                         Counted per address, not per signal, since BlueZ may
+                         emit InterfacesAdded multiple times for the same device.
+                         If a device ages out and later reappears, it is added
+                         again and counted a second time.";
+                }
+
+                leaf devices-aged-out {
+                    type uint64;
+                    description
+                        "Devices removed from discovered-ble-devs for not being
+                         seen within settings/scan/device-timeout.";
+                }
+
+                leaf devices-evicted {
+                    type uint64;
+                    description
+                        "Devices removed from discovered-ble-devs to keep the
+                         list within settings/scan/max-devices, before
+                         settings/scan/device-timeout has elapsed for them. The
+                         least recently seen device is removed to make room for
+                         a new one, or when the limit is lowered below the
+                         number of devices in the list.";
+                }
+
+                leaf devices-current {
+                    type uint64;
+                    description
+                        "Devices currently in discovered-ble-devs. Unlike the
+                         other leaves in this container, this is a current count,
+                         not an event counter. It is updated whenever a device is
+                         added to or removed from the list.";
+                }
+
+                leaf property-updates-applied {
+                    type uint64;
+                    description
+                        "BlueZ Device1 property changes that were not a repeat
+                         of the last value recorded for that device and
+                         property. Counted once per property named in a BlueZ
+                         notification, whether or not that property is one this
+                         model records or one it deliberately ignores (see
+                         unhandled-properties for the distinction); several
+                         properties in one notification each count separately.
+                         BlueZ delivers property changes, not individual
+                         advertisements, and may coalesce several into one
+                         notification, so this is not an advertisement count.";
+                }
+
+                leaf duplicate-updates-skipped {
+                    type uint64;
+                    description
+                        "Property values received unchanged from the last one
+                         recorded for that device, and so not written again.";
+                }
+
+                leaf filtered-no-manufacturer-data {
+                    type uint64;
+                    description
+                        "Advertisements not recorded because a company-id-filter
+                         is configured and the device advertised no
+                         ManufacturerData at all. Counted per notification
+                         rather than per device, so one device advertising
+                         continuously contributes many.";
+                }
+
+                leaf filtered-company-id-mismatch {
+                    type uint64;
+                    description
+                        "Advertisements not recorded because a company-id-filter
+                         is configured and the device's ManufacturerData matched
+                         none of the configured company IDs. Counted per
+                         notification rather than per device, so one device
+                         advertising continuously contributes many.";
+                }
+
+                leaf dropped-no-address {
+                    type uint64;
+                    description
+                        "A device reported by BlueZ with no Address property,
+                         and so not recorded. Counted per notification rather
+                         than per device.";
+                }
+
+                leaf dropped-no-properties {
+                    type uint64;
+                    description
+                        "A device reported by BlueZ with no readable properties
+                         at all, and so not recorded.";
+                }
+
+                leaf unhandled-properties {
+                    type uint64;
+                    description
+                        "BlueZ Device1 properties that are neither recorded nor
+                         explicitly ignored, for example Modalias. Seeing this
+                         move means a device is advertising something this
+                         model does not yet capture.";
+                }
+
+                leaf discovery-restarts {
+                    type uint64;
+                    description
+                        "Discovery stopped and restarted: settings/scan/period
+                         elapsed and the next scan began, settings/scan was
+                         reconfigured, or the adapter appeared or powered on.
+                         Counted when discovery starts, so a scan configured
+                         with a period contributes one per period.";
+                }
+
+                leaf configuration-reloads {
+                    type uint64;
+                    description
+                        "settings/scan was written and ble_scan re-read it.";
+                }
+
+                leaf discovery-failures {
+                    type uint64;
+                    description
+                        "Attempts that did not start discovery: BlueZ rejected
+                         the StartDiscovery call, or there was no adapter bound
+                         to make it on. Counted per attempt, and ble_scan
+                         retries a failed start, so one outage contributes
+                         several. A StopDiscovery failure is not counted:
+                         ble_scan calls it before every restart whether or not
+                         discovery is currently running, so it failing there is
+                         routine, not a fault.";
+                }
+
+                leaf device-proxy-failures {
+                    type uint64;
+                    description
+                        "ble_scan could not create a D-Bus proxy for a device
+                         BlueZ reported, so that device was skipped.";
+                }
+            }
+
+            container beacons {
+                description "Counts reported by the ble_beacon daemon.";
+
+                leaf start-time {
+                    type uint64;
+                    units "seconds";
+                    description
+                        "When the reporting ble_beacon process started, as
+                         seconds since the Unix epoch (UTC). Useful in its own
+                         right, since the daemon can be stopped and restarted
+                         (by its configuration being disabled and re-enabled, or
+                         by a crash) independently of every other count here
+                         going back to zero when it does.";
+                }
+
+                leaf registrations {
+                    type uint64;
+                    description
+                        "RegisterAdvertisement calls to BlueZ that succeeded.";
+                }
+
+                leaf registration-failures {
+                    type uint64;
+                    description
+                        "RegisterAdvertisement calls that BlueZ rejected,
+                         including ones that were then retried.";
+                }
+
+                leaf abandoned-after-retries {
+                    type uint64;
+                    description
+                        "A beacon's registration failed on every attempt and
+                         ble_beacon gave up, leaving it off the air until its
+                         configuration changes.";
+                }
+
+                leaf released-by-bluez {
+                    type uint64;
+                    description
+                        "BlueZ released a beacon's advertisement of its own
+                         accord, for example because the adapter was powered
+                         off.";
+                }
+
+                leaf refused-invalid-uuid {
+                    type uint64;
+                    description
+                        "A beacon was not advertised because its ibeacon-uuid or
+                         a raw-service-data uuid does not parse as a 128-bit
+                         UUID.";
+                }
+
+                leaf refused-data-too-long {
+                    type uint64;
+                    description
+                        "A raw beacon was not advertised because its
+                         manufacturer-data and service-data entries together
+                         exceed the legacy advertisement's 28-byte budget.";
+                }
+
+                leaf refused-invalid-url {
+                    type uint64;
+                    description
+                        "An eddystone-url beacon was not advertised because its
+                         URL is not valid Eddystone-URL, or its encoded form
+                         exceeds 17 bytes.";
+                }
+
+                leaf refused-no-device-name {
+                    type uint64;
+                    description
+                        "A device-name beacon was not advertised because neither
+                         the system hostname nor a custom name resolved to a
+                         name to advertise.";
+                }
+
+                leaf refused-name-slot-taken {
+                    type uint64;
+                    description
+                        "A device-name beacon was not advertised because another
+                         device-name beacon already holds the Bluetooth Local
+                         Name, which is a single device-wide property.";
+                }
+
+                leaf refused-no-adapter {
+                    type uint64;
+                    description
+                        "A beacon was not advertised because BlueZ's
+                         LEAdvertisingManager1 is not present, so there is
+                         nothing to register the advertisement with.";
+                }
+
+                leaf refused-dbus-setup {
+                    type uint64;
+                    description
+                        "A beacon was not advertised because its D-Bus
+                         advertisement object could not be set up: its name is
+                         not usable as an object path, building its
+                         advertisement properties failed, the advertisement's
+                         introspection XML failed to parse, or registering the
+                         local D-Bus object failed. The first of these is only
+                         reachable by a beacon name written outside the CLI's
+                         own character restriction; the second is not reachable
+                         at all in practice, since GLib's variant builder
+                         cannot itself fail.";
+                }
+
+                leaf reapplied-config-change {
+                    type uint64;
+                    description
+                        "A beacon was re-applied because settings/beacons
+                         changed.";
+                }
+
+                leaf reapplied-adapter-up {
+                    type uint64;
+                    description
+                        "Every configured beacon was re-applied because BlueZ's
+                         adapter appeared or was powered on.";
+                }
+
+                leaf reapplied-hostname {
+                    type uint64;
+                    description
+                        "A hostname-mode device-name beacon was re-applied
+                         because the system hostname changed.";
+                }
+            }
+        }
+        list discovered-ble-devs {
+            key "Address";
+            config false;
+            description "Bluetooth remote device.";
+
+            leaf Address {
+                type mac-address;
+                description "MAC address of the remote device.";
+            }
+
+            leaf Name {
+                type string;
+                description "Bluetooth name advertised by the device.";
+            }
+
+            leaf Alias {
+                type string;
+                description "User-friendly name.";
+            }
+
+            leaf Class {
+                type device-class;
+                description "Bluetooth device class (e.g., mouse, keyboard, headset).";
+            }
+
+            leaf Appearance {
+                type uint16;
+                description "GATT appearance value.";
+            }
+
+            leaf RSSI {
+                type int16;
+                description "Received Signal Strength Indicator (RSSI).";
+            }
+
+            leaf TxPower {
+                type int16;
+                description "Transmitted power level in dBm, as reported in the advertisement.";
+            }
+
+            leaf AdvertisingFlags {
+                type binary;
+                description "Advertising Data Flags byte array (AD type 0x01).";
+            }
+
+            list ManufacturerData {
+                key "CompanyID";
+                description "Manufacturer-specific data keyed by Bluetooth company identifier.";
+
+                leaf CompanyID {
+                    type uint16;
+                    description "Bluetooth SIG-assigned company identifier.";
+                }
+
+                leaf Data {
+                    type binary;
+                    description "Manufacturer-specific data payload.";
+                }
+            }
+
+            leaf-list UUIDs {
+                type uuid-128;
+                description "Service UUIDs supported by the device.";
+            }
+
+            leaf  ServicesResolved {
+                type boolean;
+                description "Indicates whether GATT services have been discovered.";
+            }
+
+            list ServiceData {
+                key "UUID";
+                description "Service data seen in advertisements, keyed by UUID.";
+
+                leaf UUID {
+                    type uuid-128;
+                    description "UUID identifying the service.";
+                }
+
+                leaf Data {
+                    type binary;
+                    description "Raw service data payload.";
+                }
+            }
+
+            list AdvertisingData {
+                key "type";
+                description
+                    "Raw advertising data keyed by AD type, as reported by BlueZ
+                     Device1.AdvertisingData (dict{byte -> array{byte}}).
+
+                     This is not the whole advertisement: it carries only the AD
+                     structures BlueZ has no dedicated property for. Flags (0x01),
+                     the UUID lists (0x02-0x07), the local names (0x08, 0x09, 0x30),
+                     TX power (0x0a), class of device (0x0d), the SSP fields (0x0e,
+                     0x0f), device ID (0x10), appearance (0x19), all three
+                     service-data forms (0x16, 0x20, 0x21) and manufacturer
+                     data (0xff), each of which appears in its own leaf above.
+                     None of those can appear here.
+
+                     What does reach this list is everything else. Those that
+                     carry identity or position, and so say something about who
+                     or where a device is, are:
+                       0x17  Public Target Address
+                       0x18  Random Target Address
+                       0x1b  LE Bluetooth Device Address
+                       0x24  URI
+                       0x25  Indoor Positioning
+                       0x29  Mesh Provisioning
+                       0x2b  Mesh Beacon
+                       0x2e  Resolvable Set Identifier
+                     Others also reach it - connection parameters, capability
+                     declarations, solicitation lists, encrypted mesh payloads
+                     - and are recorded just the same, keyed by their type.";
+
+                leaf type {
+                    type uint8;
+                    description
+                        "Advertising Data type code (AD type) as defined by the
+                         Bluetooth Assigned Numbers specification.";
+                }
+
+                leaf data {
+                    type binary;
+                    description "Raw bytes of the AD structure payload (excludes the AD type byte).";
+                }
+            }
+
+            leaf Timestamp {
+                type uint64;
+                units "seconds";
+                description
+                    "The time when the most recent packet was received,
+                     expressed as seconds since the Unix epoch (UTC).";
+            }
+        }
+    }
+}

@@ -1,0 +1,151 @@
+module at-wireless-client-scan-topology {
+  yang-version 1;
+  namespace "http://alliedtelesis.com/ns/yang/at-wireless-client-scan-topology";
+  prefix at-wlcst;
+
+  import ietf-network {
+    prefix nw;
+  }
+
+  import ietf-network-topology {
+    prefix nt;
+  }
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  organization
+    "Allied Telesis";
+
+  contact
+    "Allied Telesis Customer Support Group";
+
+  description
+    "This module defines the Allied Telesis extensions to IEEE 802.11 client scan topology.";
+
+  revision "2026-09-03" {
+      description "Initial revision";
+  }
+
+  typedef radio-band {
+    type enumeration {
+      enum unknown {
+        value 0;
+      }
+      enum 2-dot-4-ghz {
+        value 1;
+      }
+      enum 5-ghz {
+        value 2;
+      }
+      enum 6-ghz {
+        value 3;
+      }
+    }
+    description
+      "802.11 radio band";
+  }
+
+  typedef scan-packet-subtype {
+    type enumeration {
+      enum unknown {
+        value 0;
+      }
+      enum probe-request {
+        value 1;
+      }
+      enum auth {
+        value 2;
+      }
+      enum deauth {
+        value 3;
+      }
+      enum assoc {
+        value 4;
+      }
+      enum data {
+        value 5;
+      }
+    }
+  }
+
+  typedef time-units {
+    type uint32;
+    description
+      "A measurement of time in multiples of 1024 µs.";
+    reference
+      "3.1 of IEEE Std 802.11-2020";
+  }
+
+  grouping wireless-client-scan-link-attributes {
+    container wireless-client-scan-link-attributes {
+      leaf channel {
+        type uint16;
+        description
+          "802.11 channel";
+      }
+      leaf band {
+        type radio-band;
+        description
+          "Radio frequency band";
+      }
+      leaf rssi {
+        type int16;
+        units "dBm";
+        description
+          "Received Signal Strength Indicator";
+      }
+      leaf subtype {
+        type scan-packet-subtype;
+        description
+          "The subtype of the packet used to scan the client";
+      }
+      leaf detect-time {
+        type yang:timestamp;
+        description
+         "Detection timestamp";
+      }
+    }
+  }
+
+  grouping wireless-client-scan-node-attributes {
+    container wireless-client-scan-node-attributes {
+      leaf mac-address {
+        type yang:mac-address;
+        description
+          "Client MAC address.";
+      }
+    }
+  }
+
+  grouping wireless-client-scan-network-type {
+    description
+      "Indicates the topology type to be 802.11 Client Scan.";
+    container wireless-client-scan-topology {
+      presence "Indicates 802.11 Client Scan Network Topology.";
+      description
+        "The presence of the container node indicates 802.11 client scan topology.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    uses wireless-client-scan-network-type;
+  }
+
+  augment "/nw:networks/nw:network/nt:link" {
+    when '/nw:networks/nw:network/nw:network-types/at-wlcst:wireless-client-scan-topology' {
+      description
+        "Augmentation parameters apply only for networks with 802.11 client scan topology.";
+    }
+    uses wireless-client-scan-link-attributes;
+  }
+
+  augment "/nw:networks/nw:network/nw:node" {
+    when '/nw:networks/nw:network/nw:network-types/at-wlcst:wireless-client-scan-topology' {
+      description
+        "Augmentation parameters apply only for networks with 802.11 client scan topology.";
+    }
+    uses wireless-client-scan-node-attributes;
+  }
+}
